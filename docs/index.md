@@ -301,3 +301,4 @@ It **helps communities create it**.
 ---
 
 - [Human Interface for Sovereign Banking](/interfaces/human/bank)
+- [Organisational Framework for the Speed of Agentic AI](https://actuate.selfdriven.community/framework/organisation-for-speed-agentic-ai)
