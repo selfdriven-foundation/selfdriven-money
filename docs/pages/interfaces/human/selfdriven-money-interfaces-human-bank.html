@@ -1,0 +1,1109 @@
+---
+layout: prose
+title: Human Interface - selfdriven Money
+permalink: /interfaces/human/bank
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>selfdriven.money — Banking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   selfdriven.money — Banking App
+   Brand system from selfdriven Foundation prose.css
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --bg:          #f5f2ed;
+  --surface:     #edeae3;
+  --surface2:    #e5e1d8;
+  --border:      #ddd8ce;
+  --border-strong: #ccc7bc;
+  --text:        #1a1410;
+  --text-2:      #3d3428;
+  --muted:       #6b5f52;
+  --muted2:      #9e9085;
+  --accent:      #c8442f;
+  --accent-hover: #b53d2a;
+  --accent-dim:  rgba(200, 68, 47, 0.10);
+  --accent-strong: rgba(200, 68, 47, 0.18);
+  --green:       #2d8a5e;
+  --green-bg:    rgba(45, 138, 94, 0.10);
+  --red:         #c8442f;
+  --red-bg:      rgba(200, 68, 47, 0.10);
+  --amber:       #b8860b;
+  --amber-bg:    rgba(184, 134, 11, 0.10);
+  --blue:        #3a6fa8;
+  --blue-bg:     rgba(58, 111, 168, 0.10);
+  --purple:      #7c5db5;
+  --purple-bg:   rgba(124, 93, 181, 0.10);
+  --card-radius: 20px;
+  --r: 12px;
+  --r-sm: 8px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+  --shadow:      0 2px 16px rgba(0,0,0,0.07);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.10);
+  --ease: cubic-bezier(0.4,0,0.2,1);
+  --t: 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:          #0a0a0a;
+    --surface:     #161616;
+    --surface2:    #1e1e1e;
+    --border:      #242424;
+    --border-strong: #333;
+    --text:        #f0ede8;
+    --text-2:      #d4cfc6;
+    --muted:       #b0b0b0;
+    --muted2:      #666;
+    --accent:      #e85d4a;
+    --accent-hover: #f06b58;
+    --accent-dim:  rgba(232, 93, 74, 0.12);
+    --accent-strong: rgba(232, 93, 74, 0.20);
+    --green:       #4ade80;
+    --green-bg:    rgba(74, 222, 128, 0.10);
+    --red:         #e85d4a;
+    --red-bg:      rgba(232, 93, 74, 0.10);
+    --amber:       #fbbf24;
+    --amber-bg:    rgba(251, 191, 36, 0.10);
+    --blue:        #60a5fa;
+    --blue-bg:     rgba(96, 165, 250, 0.10);
+    --purple:      #a78bfa;
+    --purple-bg:   rgba(167, 139, 250, 0.10);
+    --shadow:      0 2px 16px rgba(0,0,0,0.4);
+    --shadow-lg:   0 8px 32px rgba(0,0,0,0.5);
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+body {
+  font-family: 'Poppins', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+}
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 10px; }
+
+/* ===== LAYOUT ===== */
+.app { display: flex; min-height: 100vh; }
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 256px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; bottom: 0;
+  z-index: 200; transition: transform 0.3s var(--ease);
+  box-shadow: var(--shadow);
+}
+
+.sb-brand {
+  padding: 20px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 11px;
+}
+.sb-logo {
+  width: 36px; height: 36px; border-radius: 10px;
+  overflow: hidden; flex-shrink: 0;
+}
+.sb-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sb-brand-text { line-height: 1.2; }
+.sb-brand-name { font-weight: 600; font-size: 14px; letter-spacing: -0.02em; }
+.sb-brand-sub { font-size: 9.5px; color: var(--muted2); letter-spacing: 0.3px; font-weight: 500; }
+
+.sb-scroll { flex: 1; overflow-y: auto; padding: 14px 10px; }
+
+.sb-group { margin-bottom: 22px; }
+.sb-group-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 1.8px;
+  text-transform: uppercase; color: var(--muted2);
+  padding: 0 10px; margin-bottom: 6px;
+}
+
+.sb-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: var(--r-sm);
+  font-size: 13px; font-weight: 500; color: var(--muted);
+  cursor: pointer; transition: all var(--t);
+  position: relative; user-select: none;
+}
+.sb-item:hover { background: var(--surface2); color: var(--text); }
+.sb-item.active {
+  background: var(--accent-dim);
+  color: var(--accent); font-weight: 600;
+}
+.sb-item.active::before {
+  content:''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 18px; background: var(--accent);
+  border-radius: 0 4px 4px 0;
+}
+
+.sb-icon { width: 18px; height: 18px; flex-shrink: 0; display: grid; place-items: center; }
+.sb-icon svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+.sb-badge {
+  margin-left: auto;
+  font-size: 10px; font-weight: 700;
+  padding: 1px 7px; border-radius: var(--r-full);
+  background: var(--accent); color: white;
+}
+
+.sb-footer { padding: 14px; border-top: 1px solid var(--border); }
+.sb-identity {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 12px; box-shadow: var(--shadow);
+}
+.sb-id-aid {
+  font-family: 'JetBrains Mono'; font-size: 10px;
+  color: var(--accent); display: flex; align-items: center; gap: 6px; margin-bottom: 5px;
+}
+.sb-id-dot {
+  width: 6px; height: 6px; background: var(--green);
+  border-radius: 50%; animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.sb-id-name { font-size: 12.5px; font-weight: 600; }
+.sb-id-role { font-size: 10.5px; color: var(--muted2); }
+
+/* ===== MAIN ===== */
+.main { flex: 1; margin-left: 256px; }
+
+/* ===== TOPBAR ===== */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 28px;
+  background: rgba(245,242,237,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+@media (prefers-color-scheme: dark) {
+  .topbar { background: rgba(10,10,10,0.92); }
+}
+
+.tb-left { display: flex; align-items: center; gap: 14px; }
+.mobile-toggle {
+  display: none; width: 36px; height: 36px; border-radius: var(--r-sm);
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--muted); cursor: pointer; place-items: center;
+}
+.mobile-toggle svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.7; }
+.tb-title { font-size: 18px; font-weight: 700; letter-spacing: -0.03em; }
+
+.tb-right { display: flex; align-items: center; gap: 10px; }
+.tb-pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: var(--r-full);
+  font-size: 11px; font-weight: 600; color: var(--muted);
+  border: 1px solid var(--border); background: var(--surface);
+}
+.tb-pill svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; }
+.tb-pill .accent { color: var(--accent); }
+
+.tb-btn {
+  width: 36px; height: 36px; border-radius: var(--r-sm);
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--muted); cursor: pointer;
+  display: grid; place-items: center; transition: all var(--t);
+  position: relative;
+}
+.tb-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--border-strong); }
+.tb-btn svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.7; }
+.tb-btn .dot {
+  position: absolute; top: 6px; right: 6px;
+  width: 6px; height: 6px; background: var(--accent);
+  border-radius: 50%; border: 1.5px solid var(--surface);
+}
+
+/* ===== CONTENT ===== */
+.content { padding: 24px 28px; max-width: 1200px; }
+
+/* ===== VIEWS ===== */
+.view { display: none; }
+.view.active { display: block; animation: viewIn 0.35s var(--ease); }
+@keyframes viewIn { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:translateY(0) } }
+
+/* ===== HERO ===== */
+.hero {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  padding: 28px 30px;
+  margin-bottom: 22px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.hero::before {
+  content:''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--accent);
+}
+
+.hero-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+}
+.hero-amount {
+  font-size: 42px; font-weight: 800; letter-spacing: -0.04em;
+  line-height: 1.05; margin-bottom: 4px;
+}
+.hero-amount .sym { font-size: 28px; font-weight: 400; color: var(--muted); }
+.hero-sub { font-size: 12.5px; color: var(--muted); }
+.hero-actions { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+
+.ha-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 18px; border-radius: var(--r-full);
+  font-size: 12px; font-weight: 600; font-family: 'Poppins';
+  cursor: pointer; transition: all var(--t); border: none;
+}
+.ha-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; }
+.ha-btn.primary { background: var(--accent); color: white; }
+.ha-btn.primary:hover { background: var(--accent-hover); box-shadow: 0 4px 20px var(--accent-dim); transform: translateY(-1px); }
+.ha-btn.ghost {
+  background: var(--bg); color: var(--text);
+  border: 1px solid var(--border);
+}
+.ha-btn.ghost:hover { background: var(--surface2); border-color: var(--border-strong); }
+
+/* ===== GRID ===== */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+
+/* ===== CARD ===== */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--card-radius); padding: 22px;
+  box-shadow: var(--shadow);
+  transition: transform var(--t), box-shadow var(--t);
+}
+.card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.ch { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.ct { font-size: 14px; font-weight: 700; letter-spacing: -0.02em; }
+.ca {
+  font-size: 11px; color: var(--accent); cursor: pointer; font-weight: 600;
+  letter-spacing: 0.02em; transition: color var(--t);
+}
+.ca:hover { color: var(--accent-hover); }
+
+/* ===== ACCOUNT ROWS ===== */
+.acct {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: all var(--t);
+}
+.acct:last-child { border-bottom: none; }
+.acct:hover .acct-name { color: var(--accent); }
+
+.acct-ico {
+  width: 38px; height: 38px; border-radius: var(--r-sm);
+  display: grid; place-items: center; flex-shrink: 0;
+  font-weight: 700; font-size: 13px;
+}
+.acct-ico.everyday { background: var(--accent-dim); color: var(--accent); }
+.acct-ico.savings { background: var(--blue-bg); color: var(--blue); }
+.acct-ico.term { background: var(--purple-bg); color: var(--purple); }
+.acct-ico.offset { background: var(--amber-bg); color: var(--amber); }
+.acct-ico.loan { background: var(--red-bg); color: var(--red); }
+
+.acct-info { flex: 1; min-width: 0; }
+.acct-name { font-size: 13.5px; font-weight: 600; transition: color var(--t); }
+.acct-meta { font-size: 11px; color: var(--muted2); margin-top: 1px; display: flex; align-items: center; gap: 6px; }
+.acct-meta .bsb { font-family: 'JetBrains Mono'; font-size: 10px; }
+
+.acct-bal { text-align: right; }
+.acct-val { font-family: 'JetBrains Mono'; font-size: 13.5px; font-weight: 500; }
+.acct-avail { font-size: 10.5px; color: var(--muted2); margin-top: 1px; }
+
+/* ===== TRANSACTIONS ===== */
+.tx {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.tx:last-child { border-bottom: none; }
+
+.tx-dot {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: grid; place-items: center; flex-shrink: 0;
+}
+.tx-dot.in { background: var(--green-bg); color: var(--green); }
+.tx-dot.out { background: var(--red-bg); color: var(--accent); }
+.tx-dot.pend { background: var(--amber-bg); color: var(--amber); }
+.tx-dot svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+.tx-body { flex: 1; min-width: 0; }
+.tx-title { font-size: 13px; font-weight: 600; }
+.tx-desc { font-size: 11px; color: var(--muted2); margin-top: 1px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+
+.tx-keri {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 9.5px; font-weight: 700; color: var(--accent);
+}
+.tx-keri svg { width: 9px; height: 9px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+
+.tx-amt { text-align: right; }
+.tx-val { font-family: 'JetBrains Mono'; font-size: 12.5px; font-weight: 500; }
+.tx-val.pos { color: var(--green); }
+.tx-val.neg { color: var(--text); }
+.tx-bal { font-size: 10px; color: var(--muted2); margin-top: 1px; font-family: 'JetBrains Mono'; }
+
+/* Category pills */
+.cat-pill {
+  display: inline-flex; padding: 1px 8px; border-radius: var(--r-full);
+  font-size: 10px; font-weight: 600;
+}
+.cat-pill.groceries { background: var(--green-bg); color: var(--green); }
+.cat-pill.dining { background: var(--amber-bg); color: var(--amber); }
+.cat-pill.transport { background: var(--blue-bg); color: var(--blue); }
+.cat-pill.bills { background: var(--red-bg); color: var(--accent); }
+.cat-pill.income { background: var(--accent-strong); color: var(--accent); }
+.cat-pill.shopping { background: var(--purple-bg); color: var(--purple); }
+.cat-pill.transfer { background: var(--surface2); color: var(--muted); }
+
+/* Spending bars */
+.spend-bar-wrap { margin-bottom: 14px; }
+.spend-bar-head { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
+.spend-bar-label { color: var(--muted); font-weight: 500; }
+.spend-bar-val { font-family: 'JetBrains Mono'; font-size: 11.5px; }
+.spend-bar { height: 6px; background: var(--surface2); border-radius: var(--r-full); overflow: hidden; }
+.spend-bar-fill { height: 100%; border-radius: var(--r-full); transition: width 0.8s var(--ease); }
+
+/* Bank cards */
+.bank-card {
+  width: 320px; height: 200px;
+  border-radius: 16px; padding: 24px;
+  position: relative; overflow: hidden;
+  color: white; display: flex; flex-direction: column;
+  justify-content: space-between; cursor: pointer;
+  transition: transform var(--t), box-shadow var(--t);
+}
+.bank-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.bank-card.debit {
+  background: linear-gradient(135deg, #7a2a1a 0%, #c8442f 50%, #a03825 100%);
+}
+.bank-card.credit {
+  background: linear-gradient(135deg, #2a1a10 0%, #4a2f1a 50%, #2a1a10 100%);
+}
+.bank-card::before {
+  content:''; position: absolute; top: -50%; right: -30%;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(255,255,255,0.08), transparent 70%);
+}
+
+.bc-top { display: flex; justify-content: space-between; align-items: flex-start; position: relative; }
+.bc-brand { font-weight: 700; font-size: 13px; letter-spacing: -0.02em; }
+.bc-type { font-size: 10px; opacity: 0.6; font-weight: 500; letter-spacing: 0.05em; }
+.bc-chip {
+  width: 36px; height: 26px; border-radius: 5px;
+  background: linear-gradient(135deg, #d4a853 0%, #c4944d 50%, #d4a853 100%);
+  opacity: 0.8;
+}
+.bc-number { font-family: 'JetBrains Mono'; font-size: 15px; letter-spacing: 3px; position: relative; opacity: 0.9; }
+.bc-bottom { display: flex; justify-content: space-between; align-items: flex-end; position: relative; }
+.bc-name { font-size: 11px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; opacity: 0.8; }
+.bc-expiry { font-family: 'JetBrains Mono'; font-size: 11px; opacity: 0.7; }
+.bc-network { font-weight: 800; font-size: 16px; opacity: 0.5; letter-spacing: -0.03em; }
+
+/* Payees */
+.payee {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.payee:last-child { border-bottom: none; }
+.payee-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--surface2); display: grid; place-items: center;
+  font-weight: 700; font-size: 13px; color: var(--muted);
+}
+.payee-info { flex: 1; }
+.payee-name { font-size: 13.5px; font-weight: 600; }
+.payee-detail { font-size: 11px; color: var(--muted2); font-family: 'JetBrains Mono'; margin-top: 1px; }
+.payee-action {
+  padding: 6px 14px; border-radius: var(--r-full);
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--muted); font-size: 11px; font-weight: 600;
+  cursor: pointer; font-family: 'Poppins'; transition: all var(--t);
+}
+.payee-action:hover { background: var(--surface2); color: var(--text); border-color: var(--border-strong); }
+
+/* Scheduled */
+.sched {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.sched:last-child { border-bottom: none; }
+.sched-freq {
+  font-size: 9px; font-weight: 700; padding: 3px 8px;
+  border-radius: var(--r-sm); letter-spacing: 0.5px;
+}
+.sched-freq.weekly { background: var(--blue-bg); color: var(--blue); }
+.sched-freq.monthly { background: var(--accent-dim); color: var(--accent); }
+.sched-freq.quarterly { background: var(--amber-bg); color: var(--amber); }
+.sched-freq.yearly { background: var(--purple-bg); color: var(--purple); }
+.sched-info { flex: 1; }
+.sched-name { font-size: 13px; font-weight: 600; }
+.sched-detail { font-size: 11px; color: var(--muted2); margin-top: 1px; }
+.sched-amt { font-family: 'JetBrains Mono'; font-size: 13px; font-weight: 500; text-align: right; }
+
+/* Tabs */
+.tabs {
+  display: flex; gap: 2px; margin-bottom: 20px;
+  background: var(--surface); border-radius: var(--r); padding: 3px;
+  border: 1px solid var(--border);
+}
+.tab {
+  flex: 1; padding: 8px 14px; text-align: center;
+  font-size: 12px; font-weight: 500; color: var(--muted2);
+  border-radius: var(--r-sm); cursor: pointer; transition: all var(--t);
+}
+.tab.active { background: var(--accent); color: white; font-weight: 600; }
+.tab:hover:not(.active) { color: var(--text); background: var(--surface2); }
+
+/* Stat */
+.stat { text-align: center; }
+.stat-val { font-size: 28px; font-weight: 800; letter-spacing: -0.04em; margin-bottom: 4px; }
+.stat-label { font-size: 11px; color: var(--muted2); font-weight: 500; }
+
+/* Statements table */
+.stmt-table { width: 100%; border-collapse: collapse; }
+.stmt-table th {
+  text-align: left; font-size: 10px; font-weight: 700;
+  color: var(--muted2); letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 8px 10px; border-bottom: 1px solid var(--border);
+}
+.stmt-table td {
+  padding: 10px; font-size: 12.5px; color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+.stmt-table tr:hover td { background: var(--surface2); }
+.stmt-dl { color: var(--accent); cursor: pointer; font-weight: 600; font-size: 11px; }
+.stmt-dl:hover { text-decoration: underline; }
+
+/* ===== MODAL ===== */
+.modal-bg {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(26,20,16,0.6); backdrop-filter: blur(8px);
+  display: none; place-items: center;
+}
+@media (prefers-color-scheme: dark) {
+  .modal-bg { background: rgba(10,10,10,0.8); }
+}
+.modal-bg.open { display: grid; }
+.modal {
+  width: 100%; max-width: 480px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--card-radius); padding: 30px;
+  position: relative; max-height: 90vh; overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+.modal::before { content:''; position: absolute; top:0; left:0; right:0; height: 3px; background: var(--accent); border-radius: var(--card-radius) var(--card-radius) 0 0; }
+
+.modal-x {
+  position: absolute; top: 14px; right: 14px;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--muted2); cursor: pointer; display: grid; place-items: center;
+  transition: all var(--t);
+}
+.modal-x:hover { background: var(--surface2); color: var(--text); }
+.modal-x svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+.modal h2 { font-size: 18px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 20px; }
+
+/* Form */
+.fg { margin-bottom: 16px; }
+.fl {
+  display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  color: var(--muted2); text-transform: uppercase; margin-bottom: 6px;
+}
+.fi {
+  width: 100%; padding: 10px 14px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--r-sm); color: var(--text);
+  font-family: 'Poppins'; font-size: 13px;
+  outline: none; transition: border-color var(--t);
+}
+.fi:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+.fi.mono { font-family: 'JetBrains Mono'; font-size: 12px; }
+.fi-big {
+  width: 100%; padding: 14px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--r-sm); color: var(--text);
+  font-family: 'Poppins'; font-size: 30px; font-weight: 700;
+  text-align: center; outline: none; letter-spacing: -0.04em;
+  transition: border-color var(--t);
+}
+.fi-big:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+.fsel {
+  width: 100%; padding: 10px 14px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--r-sm); color: var(--text);
+  font-family: 'Poppins'; font-size: 13px;
+  outline: none; cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239e9085' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+}
+.fsel option { background: var(--surface); }
+.f-hint { font-size: 10px; color: var(--muted2); margin-top: 4px; }
+
+.btn-submit {
+  width: 100%; padding: 12px;
+  background: var(--accent); color: white;
+  border: none; border-radius: var(--r-full);
+  font-family: 'Poppins'; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all var(--t);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin-top: 6px;
+}
+.btn-submit:hover { background: var(--accent-hover); box-shadow: 0 4px 20px var(--accent-dim); }
+.btn-submit svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+/* ===== AUTH ===== */
+.auth {
+  position: fixed; inset: 0; z-index: 1000;
+  background: var(--bg);
+  display: grid; place-items: center;
+}
+.auth.hidden { display: none; }
+.auth-inner { width: 100%; max-width: 400px; padding: 0 20px; text-align: center; }
+
+.auth-logo {
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; margin-bottom: 44px;
+}
+.auth-logo-mark {
+  width: 48px; height: 48px; border-radius: 14px;
+  overflow: hidden;
+}
+.auth-logo-mark img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.auth-logo-text { font-size: 26px; font-weight: 800; letter-spacing: -0.04em; }
+.auth-logo-text .m { color: var(--accent); }
+
+.auth-box {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--card-radius); padding: 36px 28px;
+  position: relative; overflow: hidden; box-shadow: var(--shadow);
+}
+.auth-box::before { content:''; position: absolute; top:0; left:0; right:0; height: 3px; background: var(--accent); }
+
+.auth-h { font-size: 20px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.03em; }
+.auth-p { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+
+.auth-btn {
+  width: 100%; padding: 14px 20px; border-radius: var(--r-full);
+  font-family: 'Poppins'; font-size: 13px; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center;
+  justify-content: center; gap: 10px; transition: all var(--t); border: none;
+}
+.auth-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+.auth-btn.pk { background: var(--accent); color: white; margin-bottom: 12px; }
+.auth-btn.pk:hover { background: var(--accent-hover); box-shadow: 0 4px 28px var(--accent-dim); transform: translateY(-1px); }
+.auth-btn.keri { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+.auth-btn.keri:hover { background: var(--surface2); }
+
+.auth-div { display: flex; align-items: center; gap: 14px; margin: 14px 0; }
+.auth-div::before, .auth-div::after { content:''; flex:1; height:1px; background: var(--border); }
+.auth-div span { font-size: 10px; color: var(--muted2); font-weight: 600; letter-spacing: 0.12em; }
+
+.auth-foot { margin-top: 20px; font-size: 11px; color: var(--muted2); line-height: 1.6; }
+.auth-foot a { color: var(--accent); text-decoration: none; font-weight: 600; }
+
+/* ===== BIOMETRIC ===== */
+.bio-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(26,20,16,0.96);
+  display: none; justify-content: center; align-items: center; flex-direction: column;
+}
+@media (prefers-color-scheme: dark) { .bio-overlay { background: rgba(10,10,10,0.96); } }
+.bio-overlay.on { display: flex; }
+
+.bio-ring {
+  width: 110px; height: 110px; border-radius: 50%;
+  border: 2px solid var(--accent);
+  display: grid; place-items: center;
+  animation: ring-p 1.5s ease infinite;
+  margin-bottom: 22px;
+}
+@keyframes ring-p { 0%,100%{box-shadow:0 0 0 0 var(--accent-dim)} 50%{box-shadow:0 0 0 18px transparent} }
+.bio-ring svg {
+  width: 42px; height: 42px; stroke: var(--accent); fill: none; stroke-width: 1.5;
+  animation: bio-draw 1.8s ease forwards;
+}
+@keyframes bio-draw { from{stroke-dasharray:200;stroke-dashoffset:200;opacity:0.3} to{stroke-dasharray:200;stroke-dashoffset:0;opacity:1} }
+.bio-text { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.bio-sub { font-size: 12.5px; color: var(--muted); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); box-shadow: 6px 0 40px rgba(0,0,0,0.2); }
+  .main { margin-left: 0; }
+  .mobile-toggle { display: grid; }
+  .content { padding: 18px 14px; }
+  .topbar { padding: 10px 14px; }
+  .g2, .g3 { grid-template-columns: 1fr; }
+  .hero-amount { font-size: 34px; }
+  .bank-card { width: 100%; }
+}
+
+/* Stagger */
+.stg > * { opacity: 0; animation: stgIn 0.4s var(--ease) forwards; }
+.stg > *:nth-child(1){animation-delay:.04s} .stg > *:nth-child(2){animation-delay:.08s}
+.stg > *:nth-child(3){animation-delay:.12s} .stg > *:nth-child(4){animation-delay:.16s}
+.stg > *:nth-child(5){animation-delay:.2s} .stg > *:nth-child(6){animation-delay:.24s}
+.stg > *:nth-child(7){animation-delay:.28s} .stg > *:nth-child(8){animation-delay:.32s}
+@keyframes stgIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div class="auth" id="auth">
+  <div class="auth-inner">
+    <div class="auth-logo">
+      <div class="auth-logo-mark"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAMgAyADASIAAhEBAxEB/8QAHAABAQEBAAMBAQAAAAAAAAAAAAIBBwUGCAQD/8QAPBABAAIBAwIDAwgLAAICAwAAAAECAwQFEQZRITFhB0GyEiI1NnF0gZMTFhcjMlNVYnPR8DORFUJSobH/xAAbAQEAAwEBAQEAAAAAAAAAAAAAAQUGAgQDB//EADQRAQABAgMDCAoDAQEAAAAAAAABAhEDBAUxUeESEyEyQXGxwQYVFiIzUmGBkaEjNEJDFP/aAAwDAQACEQMRAD8A/kA/On7cAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADxu/btg2rTfKtxfNaP3ePnz9Z9H69vy2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" alt="selfdriven"></div>
+      <div class="auth-logo-text">selfdriven<span class="m">.money</span></div>
+    </div>
+    <div class="auth-box">
+      <div class="auth-h">Welcome to your bank</div>
+      <div class="auth-p">Sign in with your passkey or KERI autonomous identifier. No passwords. Sovereign by design.</div>
+      <button class="auth-btn pk" onclick="doAuth()">
+        <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+        Sign in with Passkey
+      </button>
+      <div class="auth-div"><span>OR</span></div>
+      <button class="auth-btn keri" onclick="doAuth()">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Authenticate with KERI AID
+      </button>
+      <div class="auth-foot">
+        Protected by KERI key event infrastructure &amp; FIDO2 passkeys.<br>
+        <a href="#">selfdriven.foundation</a> · <a href="#">Privacy</a> · <a href="#">PDS</a> · <a href="#">FSG</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BIOMETRIC OVERLAY -->
+<div class="bio-overlay" id="bio">
+  <div class="bio-ring">
+    <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+  </div>
+  <div class="bio-text">Verifying identity...</div>
+  <div class="bio-sub">Touch sensor or approve on your device</div>
+</div>
+
+<!-- TRANSFER MODAL -->
+<div class="modal-bg" id="mTransfer">
+  <div class="modal">
+    <button class="modal-x" onclick="closeM('mTransfer')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h2>Transfer Money</h2>
+    <div id="transferTabs" class="tabs">
+      <div class="tab active" onclick="setTransferTab(this)">Between Accounts</div>
+      <div class="tab" onclick="setTransferTab(this)">To Someone</div>
+      <div class="tab" onclick="setTransferTab(this)">BPAY</div>
+      <div class="tab" onclick="setTransferTab(this)">International</div>
+    </div>
+    <div id="tf-between">
+      <div class="fg"><label class="fl">From Account</label><select class="fsel"><option>Everyday · BSB 802-985 · 4471 8823 — $12,847.63</option><option>Bills · BSB 802-985 · 4471 8831 — $3,240.00</option><option>Savings · BSB 802-985 · 4471 8847 — $45,620.18</option></select></div>
+      <div class="fg"><label class="fl">To Account</label><select class="fsel"><option>Savings · BSB 802-985 · 4471 8847 — $45,620.18</option><option>Everyday · BSB 802-985 · 4471 8823 — $12,847.63</option><option>Bills · BSB 802-985 · 4471 8831 — $3,240.00</option><option>Offset · BSB 802-985 · 4471 8855 — $28,500.00</option></select></div>
+      <div class="fg"><label class="fl">Amount (AUD)</label><input type="text" class="fi-big" placeholder="0.00" /></div>
+      <div class="fg"><label class="fl">Description (optional)</label><input type="text" class="fi" placeholder="e.g. Rent savings" /></div>
+      <button class="btn-submit" onclick="closeM('mTransfer')"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Transfer Now</button>
+    </div>
+    <div id="tf-someone" style="display:none;">
+      <div class="fg"><label class="fl">From Account</label><select class="fsel"><option>Everyday · BSB 802-985 · 4471 8823 — $12,847.63</option></select></div>
+      <div class="fg"><label class="fl">Payee</label><select class="fsel"><option>Sarah Chen — BSB 062-000 · 1234 5678</option><option>James Wilson — BSB 033-042 · 8765 4321</option><option>ATO — BSB 092-009 · 0001 2345</option><option>+ Add new payee</option></select></div>
+      <div class="fg"><label class="fl">Or use PayID</label><input type="text" class="fi" placeholder="email@example.com or 04XX XXX XXX" /><div class="f-hint">PayID — instant transfer via email or mobile</div></div>
+      <div class="fg"><label class="fl">Amount (AUD)</label><input type="text" class="fi-big" placeholder="0.00" /></div>
+      <div class="fg"><label class="fl">Description</label><input type="text" class="fi" placeholder="What's it for?" /></div>
+      <div class="fg"><label class="fl">When</label><select class="fsel"><option>Now</option><option>Schedule for later</option><option>Recurring</option></select></div>
+      <button class="btn-submit" onclick="closeM('mTransfer')"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Sign &amp; Send with Passkey</button>
+    </div>
+    <div id="tf-bpay" style="display:none;">
+      <div class="fg"><label class="fl">From Account</label><select class="fsel"><option>Bills · BSB 802-985 · 4471 8831 — $3,240.00</option><option>Everyday · BSB 802-985 · 4471 8823 — $12,847.63</option></select></div>
+      <div class="fg"><label class="fl">Biller Code</label><input type="text" class="fi mono" placeholder="e.g. 12345" /></div>
+      <div class="fg"><label class="fl">Reference Number</label><input type="text" class="fi mono" placeholder="Your reference number" /></div>
+      <div class="fg"><label class="fl">Amount (AUD)</label><input type="text" class="fi-big" placeholder="0.00" /></div>
+      <div class="fg"><label class="fl">Pay Date</label><input type="date" class="fi" /></div>
+      <button class="btn-submit" onclick="closeM('mTransfer')"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Pay with BPAY</button>
+    </div>
+    <div id="tf-intl" style="display:none;">
+      <div class="fg"><label class="fl">From Account</label><select class="fsel"><option>Everyday · BSB 802-985 · 4471 8823 — $12,847.63</option></select></div>
+      <div class="fg"><label class="fl">Recipient Country</label><select class="fsel"><option>United States</option><option>United Kingdom</option><option>New Zealand</option><option>Japan</option><option>Singapore</option></select></div>
+      <div class="fg"><label class="fl">Recipient Name</label><input type="text" class="fi" placeholder="Full legal name" /></div>
+      <div class="fg"><label class="fl">SWIFT / BIC</label><input type="text" class="fi mono" placeholder="e.g. CHASUS33" /></div>
+      <div class="fg"><label class="fl">Account / IBAN</label><input type="text" class="fi mono" placeholder="Account number or IBAN" /></div>
+      <div class="fg"><label class="fl">Amount (AUD)</label><input type="text" class="fi-big" placeholder="0.00" /></div>
+      <div class="fg"><label class="fl">Reason for Transfer</label><select class="fsel"><option>Personal — Family support</option><option>Business — Invoice payment</option><option>Business — Services</option><option>Investment</option></select></div>
+      <div style="background:var(--amber-bg);border:1px solid rgba(184,134,11,0.2);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--amber);">Exchange rate: 1 AUD = 0.6524 USD · Fee: $22.00 · Arrives in 1-3 business days</div>
+      <button class="btn-submit" onclick="closeM('mTransfer')"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Verify &amp; Send International</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app" style="display:none;">
+  <nav class="sidebar" id="sidebar">
+    <div class="sb-brand">
+      <div class="sb-logo"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAMgAyADASIAAhEBAxEB/8QAHAABAQEBAAMBAQAAAAAAAAAAAAIBBwUGCAQD/8QAPBABAAIBAwIDAwgLAAICAwAAAAECAwQFEQZRITFhB0GyEiI1NnF0gZMTFhcjMlNVYnPR8DORFUJSobH/xAAbAQEAAwEBAQEAAAAAAAAAAAAAAQUGAgQDB//EADQRAQABAgMDCAoDAQEAAAAAAAABAhEDBAUxUeESEyEyQXGxwQYVFiIzUmGBkaEjNEJDFP/aAAwDAQACEQMRAD8A/kA/On7cAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADxu/btg2rTfKtxfNaP3ePnz9Z9H69vy2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" alt="selfdriven"></div>
+      <div class="sb-brand-text">
+        <div class="sb-brand-name">selfdriven.money</div>
+        <div class="sb-brand-sub">sovereign banking</div>
+      </div>
+    </div>
+    <div class="sb-scroll">
+      <div class="sb-group">
+        <div class="sb-group-label">Banking</div>
+        <div class="sb-item active" onclick="nav('home',this)"><span class="sb-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>Home</div>
+        <div class="sb-item" onclick="nav('accounts',this)"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M21 4H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>Accounts</div>
+        <div class="sb-item" onclick="nav('transactions',this)"><span class="sb-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>Transactions<span class="sb-badge">5</span></div>
+        <div class="sb-item" onclick="nav('cards',this)"><span class="sb-icon"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>Cards</div>
+      </div>
+      <div class="sb-group">
+        <div class="sb-group-label">Payments</div>
+        <div class="sb-item" onclick="openM('mTransfer')"><span class="sb-icon"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></span>Transfer &amp; Pay</div>
+        <div class="sb-item" onclick="nav('payees',this)"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Payees</div>
+        <div class="sb-item" onclick="nav('scheduled',this)"><span class="sb-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>Scheduled</div>
+        <div class="sb-item" onclick="nav('directdebits',this)"><span class="sb-icon"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></span>Direct Debits</div>
+      </div>
+      <div class="sb-group">
+        <div class="sb-group-label">Insights</div>
+        <div class="sb-item" onclick="nav('spending',this)"><span class="sb-icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>Spending</div>
+        <div class="sb-item" onclick="nav('statements',this)"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>Statements</div>
+      </div>
+      <div class="sb-group">
+        <div class="sb-group-label">Identity</div>
+        <div class="sb-item" onclick="nav('identity',this)"><span class="sb-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>KERI Identity</div>
+        <div class="sb-item" onclick="nav('settings',this)"><span class="sb-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>Settings</div>
+      </div>
+    </div>
+    <div class="sb-footer">
+      <div class="sb-identity">
+        <div class="sb-id-aid"><span class="sb-id-dot"></span>EKE4g_0h...7wXkqt</div>
+        <div class="sb-id-name">Mark · selfdriven</div>
+        <div class="sb-id-role">Foundation Operator</div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="tb-left">
+        <button class="mobile-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <span class="tb-title" id="pageTitle">Home</span>
+      </div>
+      <div class="tb-right">
+        <div class="tb-pill"><span class="accent"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>KERI Secured</div>
+        <button class="tb-btn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+        <button class="tb-btn"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dot"></span></button>
+        <button class="tb-btn" onclick="lock()"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></button>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- HOME -->
+      <div class="view active" id="v-home">
+        <div class="hero">
+          <div class="hero-label">Total Balance</div>
+          <div class="hero-amount"><span class="sym">$</span>90,207.81</div>
+          <div class="hero-sub">Available: $62,087.63 · Held: $28,120.18 (Savings + Offset)</div>
+          <div class="hero-actions">
+            <button class="ha-btn primary" onclick="openM('mTransfer')"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Transfer</button>
+            <button class="ha-btn ghost" onclick="openM('mTransfer')"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>BPAY</button>
+            <button class="ha-btn ghost"><svg viewBox="0 0 24 24"><polyline points="7 13 12 18 17 13"/><line x1="12" y1="18" x2="12" y2="6"/></svg>PayID</button>
+            <button class="ha-btn ghost"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>International</button>
+          </div>
+        </div>
+
+        <div class="g2">
+          <div class="card">
+            <div class="ch"><span class="ct">Accounts</span><span class="ca" onclick="nav('accounts',document.querySelectorAll('.sb-item')[1])">View all</span></div>
+            <div class="stg">
+              <div class="acct"><div class="acct-ico everyday">E</div><div class="acct-info"><div class="acct-name">Everyday Account</div><div class="acct-meta"><span class="bsb">BSB 802-985 · 4471 8823</span></div></div><div class="acct-bal"><div class="acct-val">$12,847.63</div><div class="acct-avail">Available</div></div></div>
+              <div class="acct"><div class="acct-ico everyday">B</div><div class="acct-info"><div class="acct-name">Bills Account</div><div class="acct-meta"><span class="bsb">BSB 802-985 · 4471 8831</span></div></div><div class="acct-bal"><div class="acct-val">$3,240.00</div><div class="acct-avail">Available</div></div></div>
+              <div class="acct"><div class="acct-ico savings">S</div><div class="acct-info"><div class="acct-name">Goal Saver</div><div class="acct-meta"><span class="bsb">BSB 802-985 · 4471 8847</span> · 5.25% p.a.</div></div><div class="acct-bal"><div class="acct-val">$45,620.18</div><div class="acct-avail">Bonus rate active</div></div></div>
+              <div class="acct"><div class="acct-ico offset">O</div><div class="acct-info"><div class="acct-name">Mortgage Offset</div><div class="acct-meta"><span class="bsb">BSB 802-985 · 4471 8855</span></div></div><div class="acct-bal"><div class="acct-val">$28,500.00</div><div class="acct-avail">Offset active</div></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ch"><span class="ct">Recent Transactions</span><span class="ca" onclick="nav('transactions',document.querySelectorAll('.sb-item')[2])">View all</span></div>
+            <div class="stg">
+              <div class="tx"><div class="tx-dot out"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div><div class="tx-body"><div class="tx-title">Woolworths Metro Town Hall</div><div class="tx-desc">Today, 12:34pm · <span class="cat-pill groceries">Groceries</span></div></div><div class="tx-amt"><div class="tx-val neg">−$47.85</div><div class="tx-bal">$12,847.63</div></div></div>
+              <div class="tx"><div class="tx-dot in"><svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div><div class="tx-body"><div class="tx-title">Salary — selfdriven Foundation</div><div class="tx-desc">Yesterday · <span class="cat-pill income">Income</span> <span class="tx-keri"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>KERI</span></div></div><div class="tx-amt"><div class="tx-val pos">+$8,450.00</div><div class="tx-bal">$12,895.48</div></div></div>
+              <div class="tx"><div class="tx-dot out"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div><div class="tx-body"><div class="tx-title">Sydney Water</div><div class="tx-desc">Mar 5 · BPAY · <span class="cat-pill bills">Bills</span></div></div><div class="tx-amt"><div class="tx-val neg">−$186.40</div><div class="tx-bal">$4,445.48</div></div></div>
+              <div class="tx"><div class="tx-dot out"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div><div class="tx-body"><div class="tx-title">Uber Eats *3847</div><div class="tx-desc">Mar 4 · <span class="cat-pill dining">Dining</span></div></div><div class="tx-amt"><div class="tx-val neg">−$32.50</div><div class="tx-bal">$4,631.88</div></div></div>
+              <div class="tx"><div class="tx-dot pend"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="tx-body"><div class="tx-title">Amazon AU *9214</div><div class="tx-desc">Mar 4 · Pending · <span class="cat-pill shopping">Shopping</span></div></div><div class="tx-amt"><div class="tx-val neg">−$89.99</div><div class="tx-bal">Pending</div></div></div>
+              <div class="tx"><div class="tx-dot out"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div><div class="tx-body"><div class="tx-title">Opal Card Top Up</div><div class="tx-desc">Mar 3 · <span class="cat-pill transport">Transport</span></div></div><div class="tx-amt"><div class="tx-val neg">−$50.00</div><div class="tx-bal">$4,754.37</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="g3">
+          <div class="card stat"><div class="ct" style="margin-bottom:10px">This Month Spent</div><div class="stat-val" style="color:var(--red)">$3,847</div><div class="stat-label">12% less than last month</div></div>
+          <div class="card stat"><div class="ct" style="margin-bottom:10px">Savings Rate</div><div class="stat-val" style="color:var(--green)">5.25%</div><div class="stat-label">Bonus rate · Goal Saver</div></div>
+          <div class="card stat"><div class="ct" style="margin-bottom:10px">Home Loan</div><div class="stat-val" style="color:var(--purple)">$487k</div><div class="stat-label">6.19% · 23yr 4mo remaining</div></div>
+        </div>
+
+        <div class="card">
+          <div class="ch"><span class="ct">Upcoming Payments</span><span class="ca" onclick="nav('scheduled',document.querySelectorAll('.sb-item')[6])">Manage</span></div>
+          <div class="stg">
+            <div class="sched"><span class="sched-freq monthly">MONTHLY</span><div class="sched-info"><div class="sched-name">Home Loan Repayment</div><div class="sched-detail">Due Mar 15 · Auto debit</div></div><div class="sched-amt">$2,840.00</div></div>
+            <div class="sched"><span class="sched-freq monthly">MONTHLY</span><div class="sched-info"><div class="sched-name">Electricity — AGL</div><div class="sched-detail">Due Mar 18 · BPAY</div></div><div class="sched-amt">$245.00</div></div>
+            <div class="sched"><span class="sched-freq weekly">WEEKLY</span><div class="sched-info"><div class="sched-name">Sarah Chen — Shared rent</div><div class="sched-detail">Every Friday · PayID</div></div><div class="sched-amt">$375.00</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCOUNTS -->
+      <div class="view" id="v-accounts">
+        <div class="card" style="margin-bottom:18px"><div class="ch"><span class="ct">Transaction Accounts</span></div><div class="stg">
+          <div class="acct"><div class="acct-ico everyday">E</div><div class="acct-info"><div class="acct-name">Everyday Account</div><div class="acct-meta"><span class="bsb">BSB 802-985 · Acct 4471 8823</span> · Visa Debit</div></div><div class="acct-bal"><div class="acct-val">$12,847.63</div><div class="acct-avail">Available: $12,847.63</div></div></div>
+          <div class="acct"><div class="acct-ico everyday">B</div><div class="acct-info"><div class="acct-name">Bills Account</div><div class="acct-meta"><span class="bsb">BSB 802-985 · Acct 4471 8831</span></div></div><div class="acct-bal"><div class="acct-val">$3,240.00</div><div class="acct-avail">Available: $3,240.00</div></div></div>
+        </div></div>
+        <div class="card" style="margin-bottom:18px"><div class="ch"><span class="ct">Savings &amp; Investments</span></div><div class="stg">
+          <div class="acct"><div class="acct-ico savings">S</div><div class="acct-info"><div class="acct-name">Goal Saver</div><div class="acct-meta"><span class="bsb">BSB 802-985 · Acct 4471 8847</span> · 5.25% p.a. (bonus)</div></div><div class="acct-bal"><div class="acct-val">$45,620.18</div><div class="acct-avail">Interest accrued: $198.42</div></div></div>
+          <div class="acct"><div class="acct-ico term">T</div><div class="acct-info"><div class="acct-name">Term Deposit — 12 Month</div><div class="acct-meta">4.80% p.a. · Matures 15 Sep 2026</div></div><div class="acct-bal"><div class="acct-val">$25,000.00</div><div class="acct-avail">Locked until maturity</div></div></div>
+        </div></div>
+        <div class="card" style="margin-bottom:18px"><div class="ch"><span class="ct">Home Loan</span></div><div class="stg">
+          <div class="acct"><div class="acct-ico loan">L</div><div class="acct-info"><div class="acct-name">Home Loan — Variable</div><div class="acct-meta">6.19% p.a. · Repayments: $2,840/mo · LVR: 68%</div></div><div class="acct-bal"><div class="acct-val" style="color:var(--red)">−$487,240</div><div class="acct-avail">Redraw: $12,340</div></div></div>
+          <div class="acct"><div class="acct-ico offset">O</div><div class="acct-info"><div class="acct-name">Mortgage Offset</div><div class="acct-meta"><span class="bsb">BSB 802-985 · Acct 4471 8855</span> · 100% offset</div></div><div class="acct-bal"><div class="acct-val">$28,500.00</div><div class="acct-avail">Saving $147.12/mo interest</div></div></div>
+        </div></div>
+        <div class="card"><div class="ch"><span class="ct">Account Details — Everyday</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;"><div style="font-size:10px;color:var(--muted2);text-transform:uppercase;font-weight:700;letter-spacing:0.12em;margin-bottom:4px;">BSB</div><div style="font-family:'JetBrains Mono';font-size:16px;font-weight:500;">802-985</div></div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;"><div style="font-size:10px;color:var(--muted2);text-transform:uppercase;font-weight:700;letter-spacing:0.12em;margin-bottom:4px;">Account Number</div><div style="font-family:'JetBrains Mono';font-size:16px;font-weight:500;">4471 8823</div></div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;"><div style="font-size:10px;color:var(--muted2);text-transform:uppercase;font-weight:700;letter-spacing:0.12em;margin-bottom:4px;">PayID (Email)</div><div style="font-family:'JetBrains Mono';font-size:12px;color:var(--accent);">mark@selfdriven.foundation</div></div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;"><div style="font-size:10px;color:var(--muted2);text-transform:uppercase;font-weight:700;letter-spacing:0.12em;margin-bottom:4px;">PayID (Mobile)</div><div style="font-family:'JetBrains Mono';font-size:14px;color:var(--accent);">+61 4XX XXX XXX</div></div>
+            <div style="background:var(--accent-dim);border:1px solid rgba(200,68,47,0.2);border-radius:var(--r-sm);padding:12px;grid-column:1/3;"><div style="font-size:10px;color:var(--muted2);text-transform:uppercase;font-weight:700;letter-spacing:0.12em;margin-bottom:4px;">KERI AID (Sovereign Identifier)</div><div style="font-family:'JetBrains Mono';font-size:12px;color:var(--accent);word-break:break-all;">EKE4g_0hDGBOqDLKzNBT3kFOPxoP7wXkqt</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TRANSACTIONS -->
+      <div class="view" id="v-transactions">
+        <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+          <select class="fsel" style="width:auto;min-width:200px;"><option>Everyday Account · ••8823</option><option>Bills Account · ••8831</option><option>Goal Saver · ••8847</option><option>All Accounts</option></select>
+          <input type="text" class="fi" style="width:auto;min-width:220px;" placeholder="Search transactions..." />
+          <select class="fsel" style="width:auto;"><option>All Categories</option><option>Groceries</option><option>Dining</option><option>Transport</option><option>Bills</option><option>Shopping</option><option>Income</option></select>
+        </div>
+        <div class="card"><div class="ch"><span class="ct">March 2026</span><span class="ca">Export</span></div><div class="stg">
+          <div class="tx"><div class="tx-dot out"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div><div class="tx-body"><div class="tx-title">Woolworths Metro Town Hall</div><div class="tx-desc">7 Mar · 12:34pm · Visa Debit ••4823 · <span class="cat-pill groceries">Groceries</span></div></div><div class="tx-amt"><div class="tx-val neg">−$47.85</div><div class="tx-bal">$12,847.63</div></div></div>
+          <div class="tx"><div class="tx-dot in"><svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div><div class="tx-body"><div class="tx-title">Salary — selfdriven Foundation</div><div class="tx-desc">6 Mar · Direct Credit · PayID · <span class="cat-pill income">Income</span> <span class="tx-keri"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>KERI</span></div></div><div class="tx-amt"><div class="tx-val pos">+$8,450.00</div><div class="tx-bal">$12,895.48</div></div></div>
+          <div class="tx"><div class="tx-dot out"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div><div class="tx-body"><div class="tx-title">Sydney Water Corporation</div><div class="tx-desc">5 Mar · BPAY · Ref: 8847291034 · <span class="cat-pill bills">Bills</span></div></div><div class="tx-amt"><div class="tx-val neg">−$186.40</div><div class="tx-bal">$4,445.48</div></div></div>
+          <div class="tx"><div class="tx-dot out"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div><div class="tx-body"><div class="tx-title">Uber Eats *3847</div><div class="tx-desc">4 Mar · Visa Debit ••4823 · <span class="cat-pill dining">Dining</span></div></div><div class="tx-amt"><div class="tx-val neg">−$32.50</div><div class="tx-bal">$4,631.88</div></div></div>
+          <div class="tx"><div class="tx-dot pend"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="tx-body"><div class="tx-title">Amazon AU *9214</div><div class="tx-desc">4 Mar · Pending · Visa Debit ••4823 · <span class="cat-pill shopping">Shopping</span></div></div><div class="tx-amt"><div class="tx-val neg">−$89.99</div><div class="tx-bal">Pending</div></div></div>
+          <div class="tx"><div class="tx-dot out"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div><div class="tx-body"><div class="tx-title">Home Loan Repayment</div><div class="tx-desc">1 Mar · Direct Debit · <span class="cat-pill bills">Bills</span></div></div><div class="tx-amt"><div class="tx-val neg">−$2,840.00</div><div class="tx-bal">$4,869.57</div></div></div>
+        </div></div>
+      </div>
+
+      <!-- CARDS -->
+      <div class="view" id="v-cards">
+        <div style="display:flex;gap:24px;flex-wrap:wrap;margin-bottom:22px;">
+          <div class="bank-card debit"><div class="bc-top"><div><div class="bc-brand">selfdriven.money</div><div class="bc-type">VISA DEBIT</div></div><div class="bc-chip"></div></div><div class="bc-number">4823 •••• •••• 7741</div><div class="bc-bottom"><div><div class="bc-name">MARK BYERS</div><div class="bc-expiry">09/28</div></div><div class="bc-network">VISA</div></div></div>
+          <div class="bank-card credit"><div class="bc-top"><div><div class="bc-brand">selfdriven.money</div><div class="bc-type">MASTERCARD PLATINUM</div></div><div class="bc-chip"></div></div><div class="bc-number">5412 •••• •••• 3309</div><div class="bc-bottom"><div><div class="bc-name">MARK BYERS</div><div class="bc-expiry">11/27</div></div><div class="bc-network">MC</div></div></div>
+        </div>
+        <div class="g2">
+          <div class="card"><div class="ch"><span class="ct">Visa Debit ••7741</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div><div style="font-size:11px;color:var(--muted2);margin-bottom:3px;">Status</div><div style="font-size:13px;font-weight:600;color:var(--green);">Active</div></div>
+              <div><div style="font-size:11px;color:var(--muted2);margin-bottom:3px;">Daily Limit</div><div style="font-size:13px;font-weight:600;">$5,000</div></div>
+              <div><div style="font-size:11px;color:var(--muted2);margin-bottom:3px;">Contactless</div><div style="font-size:13px;font-weight:600;color:var(--green);">Enabled</div></div>
+              <div><div style="font-size:11px;color:var(--muted2);margin-bottom:3px;">International</div><div style="font-size:13px;font-weight:600;color:var(--green);">Enabled</div></div>
+            </div>
+            <div style="margin-top:14px;display:flex;gap:8px;"><button class="ha-btn ghost" style="font-size:11px;padding:7px 14px;">Lock Card</button><button class="ha-btn ghost" style="font-size:11px;padding:7px 14px;">Report Lost</button><button class="ha-btn ghost" style="font-size:11px;padding:7px 14px;">Set PIN</button></div>
+          </div>
+          <div class="card"><div class="ch"><span class="ct">Mastercard Platinum ••3309</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div><div style="font-size:11px;color:var(--muted2);margin-bottom:3px;">Credit Limit</div><div style="font-size:13px;font-weight:600;">$15,000</div></div>
+              <div><div style="font-size:11px;color:var(--muted2);margin-bottom:3px;">Available</div><div style="font-size:13px;font-weight:600;color:var(--green);">$12,240.50</div></div>
+              <div><div style="font-size:11px;color:var(--muted2);margin-bottom:3px;">Balance Owing</div><div style="font-size:13px;font-weight:600;color:var(--red);">$2,759.50</div></div>
+              <div><div style="font-size:11px;color:var(--muted2);margin-bottom:3px;">Payment Due</div><div style="font-size:13px;font-weight:600;color:var(--amber);">22 Mar 2026</div></div>
+            </div>
+            <div style="margin-top:14px;display:flex;gap:8px;"><button class="ha-btn ghost" style="font-size:11px;padding:7px 14px;">Lock Card</button><button class="ha-btn primary" style="font-size:11px;padding:7px 14px;">Pay Balance</button></div>
+          </div>
+        </div>
+        <div class="card"><div class="ch"><span class="ct">Digital Wallets</span></div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap;">
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:12px 18px;display:flex;align-items:center;gap:10px;"><div style="font-size:18px;">🍎</div><div><div style="font-size:13px;font-weight:600;">Apple Pay</div><div style="font-size:11px;color:var(--green);">Connected</div></div></div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:12px 18px;display:flex;align-items:center;gap:10px;"><div style="font-size:18px;">📱</div><div><div style="font-size:13px;font-weight:600;">Google Pay</div><div style="font-size:11px;color:var(--green);">Connected</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAYEES -->
+      <div class="view" id="v-payees">
+        <div style="display:flex;gap:10px;margin-bottom:16px;"><input type="text" class="fi" style="flex:1;" placeholder="Search payees..." /><button class="ha-btn primary" style="white-space:nowrap;">+ Add Payee</button></div>
+        <div class="card" style="margin-bottom:18px"><div class="ch"><span class="ct">Saved Payees</span></div><div class="stg">
+          <div class="payee"><div class="payee-avatar">SC</div><div class="payee-info"><div class="payee-name">Sarah Chen</div><div class="payee-detail">BSB 062-000 · 1234 5678</div></div><button class="payee-action" onclick="openM('mTransfer')">Pay</button></div>
+          <div class="payee"><div class="payee-avatar">JW</div><div class="payee-info"><div class="payee-name">James Wilson</div><div class="payee-detail">BSB 033-042 · 8765 4321</div></div><button class="payee-action" onclick="openM('mTransfer')">Pay</button></div>
+          <div class="payee"><div class="payee-avatar" style="background:var(--red-bg);color:var(--accent);">AT</div><div class="payee-info"><div class="payee-name">Australian Taxation Office</div><div class="payee-detail">BSB 092-009 · 0001 2345</div></div><button class="payee-action" onclick="openM('mTransfer')">Pay</button></div>
+          <div class="payee"><div class="payee-avatar" style="background:var(--accent-dim);color:var(--accent);">sd</div><div class="payee-info"><div class="payee-name">selfdriven Foundation</div><div class="payee-detail">PayID: finance@selfdriven.foundation <span class="tx-keri"><svg viewBox="0 0 24 24" style="width:9px;height:9px;stroke:currentColor;fill:none;stroke-width:2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>KERI</span></div></div><button class="payee-action" onclick="openM('mTransfer')">Pay</button></div>
+        </div></div>
+        <div class="card"><div class="ch"><span class="ct">BPAY Billers</span></div><div class="stg">
+          <div class="payee"><div class="payee-avatar" style="background:var(--blue-bg);color:var(--blue);">SW</div><div class="payee-info"><div class="payee-name">Sydney Water</div><div class="payee-detail">Biller: 12389 · Ref: 8847291034</div></div><button class="payee-action" onclick="openM('mTransfer')">Pay</button></div>
+          <div class="payee"><div class="payee-avatar" style="background:var(--amber-bg);color:var(--amber);">AG</div><div class="payee-info"><div class="payee-name">AGL Energy</div><div class="payee-detail">Biller: 45219 · Ref: 1029384756</div></div><button class="payee-action" onclick="openM('mTransfer')">Pay</button></div>
+          <div class="payee"><div class="payee-avatar" style="background:var(--purple-bg);color:var(--purple);">TC</div><div class="payee-info"><div class="payee-name">Telstra</div><div class="payee-detail">Biller: 18642 · Ref: 7483920156</div></div><button class="payee-action" onclick="openM('mTransfer')">Pay</button></div>
+        </div></div>
+      </div>
+
+      <!-- SCHEDULED -->
+      <div class="view" id="v-scheduled">
+        <div class="card" style="margin-bottom:18px"><div class="ch"><span class="ct">Scheduled Transfers</span><span class="ca">+ New</span></div><div class="stg">
+          <div class="sched"><span class="sched-freq weekly">WEEKLY</span><div class="sched-info"><div class="sched-name">Sarah Chen — Shared rent</div><div class="sched-detail">Every Friday · PayID · From Everyday</div></div><div class="sched-amt">$375.00</div></div>
+          <div class="sched"><span class="sched-freq monthly">MONTHLY</span><div class="sched-info"><div class="sched-name">Goal Saver — Auto transfer</div><div class="sched-detail">1st of month · Between accounts</div></div><div class="sched-amt">$2,000.00</div></div>
+          <div class="sched"><span class="sched-freq monthly">MONTHLY</span><div class="sched-info"><div class="sched-name">ATO — Tax instalment</div><div class="sched-detail">21st of month · BSB transfer</div></div><div class="sched-amt">$1,200.00</div></div>
+          <div class="sched"><span class="sched-freq quarterly">QUARTERLY</span><div class="sched-info"><div class="sched-name">Strata Levies</div><div class="sched-detail">1 Jan, Apr, Jul, Oct · BPAY</div></div><div class="sched-amt">$1,840.00</div></div>
+        </div></div>
+        <div class="card"><div class="ch"><span class="ct">BPAY Scheduled</span></div><div class="stg">
+          <div class="sched"><span class="sched-freq monthly">MONTHLY</span><div class="sched-info"><div class="sched-name">AGL Electricity</div><div class="sched-detail">18th of month · From Bills account</div></div><div class="sched-amt">~$245.00</div></div>
+          <div class="sched"><span class="sched-freq monthly">MONTHLY</span><div class="sched-info"><div class="sched-name">Telstra Mobile</div><div class="sched-detail">25th of month · From Bills account</div></div><div class="sched-amt">$89.00</div></div>
+        </div></div>
+      </div>
+
+      <!-- DIRECT DEBITS -->
+      <div class="view" id="v-directdebits">
+        <div class="card"><div class="ch"><span class="ct">Active Direct Debits</span></div><div class="stg">
+          <div class="sched"><span class="sched-freq monthly">MONTHLY</span><div class="sched-info"><div class="sched-name">Home Loan Repayment</div><div class="sched-detail">selfdriven.money Lending · 15th · From Everyday</div></div><div class="sched-amt">$2,840.00</div></div>
+          <div class="sched"><span class="sched-freq monthly">MONTHLY</span><div class="sched-info"><div class="sched-name">Health Insurance — Medibank</div><div class="sched-detail">Direct debit · 3rd · From Everyday</div></div><div class="sched-amt">$248.50</div></div>
+          <div class="sched"><span class="sched-freq monthly">MONTHLY</span><div class="sched-info"><div class="sched-name">Netflix</div><div class="sched-detail">Visa Debit ••7741 · Recurring</div></div><div class="sched-amt">$22.99</div></div>
+          <div class="sched"><span class="sched-freq monthly">MONTHLY</span><div class="sched-info"><div class="sched-name">Spotify Premium</div><div class="sched-detail">Visa Debit ••7741 · Recurring</div></div><div class="sched-amt">$13.99</div></div>
+          <div class="sched"><span class="sched-freq yearly">YEARLY</span><div class="sched-info"><div class="sched-name">Car Insurance — NRMA</div><div class="sched-detail">Direct debit · Due 14 Nov · From Everyday</div></div><div class="sched-amt">$1,420.00</div></div>
+        </div></div>
+      </div>
+
+      <!-- SPENDING -->
+      <div class="view" id="v-spending">
+        <div class="g3" style="margin-bottom:20px;">
+          <div class="card stat"><div class="ct" style="margin-bottom:8px">Spent This Month</div><div class="stat-val" style="color:var(--red)">$3,847</div><div class="stat-label">Budget: $5,000</div></div>
+          <div class="card stat"><div class="ct" style="margin-bottom:8px">Income</div><div class="stat-val" style="color:var(--green)">$8,450</div><div class="stat-label">Salary + other</div></div>
+          <div class="card stat"><div class="ct" style="margin-bottom:8px">Net Position</div><div class="stat-val" style="color:var(--accent)">+$4,603</div><div class="stat-label">Saving 54%</div></div>
+        </div>
+        <div class="card" style="margin-bottom:20px"><div class="ch"><span class="ct">Spending by Category — March 2026</span></div>
+          <div class="spend-bar-wrap"><div class="spend-bar-head"><span class="spend-bar-label">Housing &amp; Utilities</span><span class="spend-bar-val">$2,840</span></div><div class="spend-bar"><div class="spend-bar-fill" style="width:73%;background:var(--red);"></div></div></div>
+          <div class="spend-bar-wrap"><div class="spend-bar-head"><span class="spend-bar-label">Groceries</span><span class="spend-bar-val">$412</span></div><div class="spend-bar"><div class="spend-bar-fill" style="width:22%;background:var(--green);"></div></div></div>
+          <div class="spend-bar-wrap"><div class="spend-bar-head"><span class="spend-bar-label">Dining &amp; Takeaway</span><span class="spend-bar-val">$187</span></div><div class="spend-bar"><div class="spend-bar-fill" style="width:14%;background:var(--amber);"></div></div></div>
+          <div class="spend-bar-wrap"><div class="spend-bar-head"><span class="spend-bar-label">Transport</span><span class="spend-bar-val">$148</span></div><div class="spend-bar"><div class="spend-bar-fill" style="width:11%;background:var(--blue);"></div></div></div>
+          <div class="spend-bar-wrap"><div class="spend-bar-head"><span class="spend-bar-label">Shopping</span><span class="spend-bar-val">$90</span></div><div class="spend-bar"><div class="spend-bar-fill" style="width:8%;background:var(--purple);"></div></div></div>
+          <div class="spend-bar-wrap"><div class="spend-bar-head"><span class="spend-bar-label">Subscriptions</span><span class="spend-bar-val">$170</span></div><div class="spend-bar"><div class="spend-bar-fill" style="width:12%;background:var(--muted2);"></div></div></div>
+        </div>
+        <div class="card"><div class="ch"><span class="ct">Monthly Trend</span></div>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;text-align:center;">
+            <div><div style="height:100px;display:flex;align-items:flex-end;justify-content:center;"><div style="width:28px;background:var(--surface2);border-radius:4px 4px 0 0;height:85%;"></div></div><div style="font-size:10px;color:var(--muted2);margin-top:6px;">Oct</div><div style="font-size:11px;font-family:'JetBrains Mono';">$4.2k</div></div>
+            <div><div style="height:100px;display:flex;align-items:flex-end;justify-content:center;"><div style="width:28px;background:var(--surface2);border-radius:4px 4px 0 0;height:78%;"></div></div><div style="font-size:10px;color:var(--muted2);margin-top:6px;">Nov</div><div style="font-size:11px;font-family:'JetBrains Mono';">$3.9k</div></div>
+            <div><div style="height:100px;display:flex;align-items:flex-end;justify-content:center;"><div style="width:28px;background:var(--surface2);border-radius:4px 4px 0 0;height:95%;"></div></div><div style="font-size:10px;color:var(--muted2);margin-top:6px;">Dec</div><div style="font-size:11px;font-family:'JetBrains Mono';">$5.1k</div></div>
+            <div><div style="height:100px;display:flex;align-items:flex-end;justify-content:center;"><div style="width:28px;background:var(--surface2);border-radius:4px 4px 0 0;height:82%;"></div></div><div style="font-size:10px;color:var(--muted2);margin-top:6px;">Jan</div><div style="font-size:11px;font-family:'JetBrains Mono';">$4.4k</div></div>
+            <div><div style="height:100px;display:flex;align-items:flex-end;justify-content:center;"><div style="width:28px;background:var(--surface2);border-radius:4px 4px 0 0;height:80%;"></div></div><div style="font-size:10px;color:var(--muted2);margin-top:6px;">Feb</div><div style="font-size:11px;font-family:'JetBrains Mono';">$4.3k</div></div>
+            <div><div style="height:100px;display:flex;align-items:flex-end;justify-content:center;"><div style="width:28px;background:var(--accent);border-radius:4px 4px 0 0;height:72%;"></div></div><div style="font-size:10px;color:var(--accent);margin-top:6px;font-weight:600;">Mar</div><div style="font-size:11px;font-family:'JetBrains Mono';color:var(--accent);">$3.8k</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATEMENTS -->
+      <div class="view" id="v-statements">
+        <div style="margin-bottom:16px;"><select class="fsel" style="width:auto;min-width:220px;"><option>Everyday Account · ••8823</option><option>Bills Account · ••8831</option><option>Goal Saver · ••8847</option><option>Credit Card · ••3309</option><option>Home Loan</option></select></div>
+        <div class="card" style="margin-bottom:18px"><div class="ch"><span class="ct">Available Statements</span></div>
+          <table class="stmt-table"><thead><tr><th>Period</th><th>Account</th><th>Opening</th><th>Closing</th><th></th></tr></thead><tbody>
+            <tr><td>1 Feb – 28 Feb 2026</td><td>Everyday ••8823</td><td style="font-family:'JetBrains Mono';font-size:12px;">$7,237.57</td><td style="font-family:'JetBrains Mono';font-size:12px;">$12,895.48</td><td><span class="stmt-dl">Download PDF</span></td></tr>
+            <tr><td>1 Jan – 31 Jan 2026</td><td>Everyday ••8823</td><td style="font-family:'JetBrains Mono';font-size:12px;">$5,104.22</td><td style="font-family:'JetBrains Mono';font-size:12px;">$7,237.57</td><td><span class="stmt-dl">Download PDF</span></td></tr>
+            <tr><td>1 Dec – 31 Dec 2025</td><td>Everyday ••8823</td><td style="font-family:'JetBrains Mono';font-size:12px;">$6,892.10</td><td style="font-family:'JetBrains Mono';font-size:12px;">$5,104.22</td><td><span class="stmt-dl">Download PDF</span></td></tr>
+          </tbody></table>
+        </div>
+        <div class="card"><div class="ch"><span class="ct">Tax Documents</span></div>
+          <table class="stmt-table"><thead><tr><th>Document</th><th>Period</th><th></th></tr></thead><tbody>
+            <tr><td>Annual Interest Summary</td><td>FY 2024-25</td><td><span class="stmt-dl">Download PDF</span></td></tr>
+            <tr><td>PAYG Summary</td><td>FY 2024-25</td><td><span class="stmt-dl">Download PDF</span></td></tr>
+            <tr><td>Loan Interest Certificate</td><td>FY 2024-25</td><td><span class="stmt-dl">Download PDF</span></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+
+      <!-- KERI IDENTITY -->
+      <div class="view" id="v-identity">
+        <div class="card" style="margin-bottom:18px">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+            <div style="width:48px;height:48px;background:var(--accent-dim);border:1px solid rgba(200,68,47,0.2);border-radius:var(--r);display:grid;place-items:center;color:var(--accent);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div><div style="font-size:17px;font-weight:700;">KERI Autonomous Identifier</div><div style="font-size:12px;color:var(--muted);">Your banking identity is secured by a self-certifying identifier</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px;">
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px;text-align:center;"><div style="font-family:'JetBrains Mono';font-size:22px;font-weight:500;color:var(--accent);margin-bottom:4px;">24</div><div style="font-size:11px;color:var(--muted2);font-weight:600;">Key Events</div></div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px;text-align:center;"><div style="font-family:'JetBrains Mono';font-size:22px;font-weight:500;color:var(--blue);margin-bottom:4px;">3</div><div style="font-size:11px;color:var(--muted2);font-weight:600;">Witnesses</div></div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px;text-align:center;"><div style="font-family:'JetBrains Mono';font-size:22px;font-weight:500;color:var(--green);margin-bottom:4px;">2</div><div style="font-size:11px;color:var(--muted2);font-weight:600;">Passkeys</div></div>
+          </div>
+          <div style="margin-bottom:16px;"><div style="font-size:10px;color:var(--muted2);text-transform:uppercase;font-weight:700;letter-spacing:0.12em;margin-bottom:6px;">Primary AID</div><div style="font-family:'JetBrains Mono';font-size:13px;color:var(--accent);background:var(--bg);padding:12px;border-radius:var(--r-sm);border:1px solid var(--border);word-break:break-all;">EKE4g_0hDGBOqDLKzNBT3kFOPxoP7wXkqt</div></div>
+          <div style="font-size:10px;color:var(--muted2);text-transform:uppercase;font-weight:700;letter-spacing:0.12em;margin-bottom:8px;">Recent Key Events</div>
+          <div style="border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden;">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);font-size:12px;"><span style="font-family:'JetBrains Mono';font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;background:var(--accent-dim);color:var(--accent);">icp</span><span style="flex:1;color:var(--muted);">Inception — Ed25519 + Passkey binding</span><span style="font-family:'JetBrains Mono';font-size:10px;color:var(--muted2);">2025-01-10</span></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);font-size:12px;"><span style="font-family:'JetBrains Mono';font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;background:var(--purple-bg);color:var(--purple);">rot</span><span style="flex:1;color:var(--muted);">Scheduled key rotation</span><span style="font-family:'JetBrains Mono';font-size:10px;color:var(--muted2);">2025-07-10</span></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);font-size:12px;"><span style="font-family:'JetBrains Mono';font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;background:var(--blue-bg);color:var(--blue);">ixn</span><span style="flex:1;color:var(--muted);">Banking credential anchored</span><span style="font-family:'JetBrains Mono';font-size:10px;color:var(--muted2);">2025-07-12</span></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;font-size:12px;"><span style="font-family:'JetBrains Mono';font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;background:var(--blue-bg);color:var(--blue);">ixn</span><span style="flex:1;color:var(--muted);">Second passkey registered</span><span style="font-family:'JetBrains Mono';font-size:10px;color:var(--muted2);">2026-02-14</span></div>
+          </div>
+        </div>
+        <div class="card"><div class="ch"><span class="ct">Registered Passkeys</span></div><div class="stg">
+          <div class="payee"><div class="payee-avatar" style="background:var(--accent-dim);color:var(--accent);">🔑</div><div class="payee-info"><div class="payee-name">MacBook Pro — Touch ID</div><div class="payee-detail">Registered 10 Jan 2025 · Last used today</div></div><button class="payee-action" style="color:var(--red);border-color:var(--red-bg);">Remove</button></div>
+          <div class="payee"><div class="payee-avatar" style="background:var(--accent-dim);color:var(--accent);">🔑</div><div class="payee-info"><div class="payee-name">iPhone 16 Pro — Face ID</div><div class="payee-detail">Registered 14 Feb 2026 · Last used yesterday</div></div><button class="payee-action" style="color:var(--red);border-color:var(--red-bg);">Remove</button></div>
+        </div></div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="view" id="v-settings">
+        <div class="card" style="margin-bottom:18px">
+          <div style="font-size:15px;font-weight:700;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);">Security &amp; Authentication</div>
+          <div class="stg">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);"><div><div style="font-size:13px;font-weight:600;">Passkey Required for Transfers</div><div style="font-size:11px;color:var(--muted2);margin-top:1px;">Biometric confirmation for all outgoing payments</div></div><div style="width:42px;height:22px;border-radius:11px;background:var(--accent);cursor:pointer;position:relative;" onclick="this.style.background=this.style.background==='var(--surface2)'?'var(--accent)':'var(--surface2)'"><div style="position:absolute;top:2px;left:20px;width:18px;height:18px;border-radius:50%;background:white;transition:left 0.2s;"></div></div></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);"><div><div style="font-size:13px;font-weight:600;">KERI Key Rotation</div><div style="font-size:11px;color:var(--muted2);margin-top:1px;">Automatic pre-rotated key activation every 180 days</div></div><div style="width:42px;height:22px;border-radius:11px;background:var(--accent);cursor:pointer;position:relative;"><div style="position:absolute;top:2px;left:20px;width:18px;height:18px;border-radius:50%;background:white;"></div></div></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);"><div><div style="font-size:13px;font-weight:600;">Transaction Notifications</div><div style="font-size:11px;color:var(--muted2);margin-top:1px;">Push notification for every debit and credit</div></div><div style="width:42px;height:22px;border-radius:11px;background:var(--accent);cursor:pointer;position:relative;"><div style="position:absolute;top:2px;left:20px;width:18px;height:18px;border-radius:50%;background:white;"></div></div></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;"><div><div style="font-size:13px;font-weight:600;">Daily Transfer Limit</div><div style="font-size:11px;color:var(--muted2);margin-top:1px;">Maximum single-day outgoing transfers</div></div><div style="font-family:'JetBrains Mono';font-size:13px;">$20,000</div></div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:18px">
+          <div style="font-size:15px;font-weight:700;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);">Personal Details</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div><div style="font-size:11px;color:var(--muted2);margin-bottom:3px;">Full Name</div><div style="font-size:13px;font-weight:500;">Mark Byers</div></div>
+            <div><div style="font-size:11px;color:var(--muted2);margin-bottom:3px;">Date of Birth</div><div style="font-size:13px;">•• / •• / ••••</div></div>
+            <div><div style="font-size:11px;color:var(--muted2);margin-bottom:3px;">Email</div><div style="font-size:13px;">mark@selfdriven.foundation</div></div>
+            <div><div style="font-size:11px;color:var(--muted2);margin-bottom:3px;">Mobile</div><div style="font-size:13px;">+61 4XX XXX XXX</div></div>
+            <div style="grid-column:1/3;"><div style="font-size:11px;color:var(--muted2);margin-bottom:3px;">Residential Address</div><div style="font-size:13px;">••• ••••••••, NSW 2000</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-size:15px;font-weight:700;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);">Preferences</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);"><div><div style="font-size:13px;font-weight:600;">Default Transfer Account</div><div style="font-size:11px;color:var(--muted2);margin-top:1px;">Everyday ••8823</div></div><span class="ca">Change</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);"><div><div style="font-size:13px;font-weight:600;">Statement Delivery</div><div style="font-size:11px;color:var(--muted2);margin-top:1px;">Electronic only</div></div><span class="ca">Change</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;"><div><div style="font-size:13px;font-weight:600;">Two-Factor Authentication</div><div style="font-size:11px;color:var(--muted2);margin-top:1px;">Passkey (FIDO2) — no SMS fallback</div></div><span class="ca">Manage</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+function doAuth(){const b=document.getElementById('bio');b.classList.add('on');setTimeout(()=>{b.querySelector('.bio-text').textContent='Identity verified';b.querySelector('.bio-sub').textContent='KERI key event confirmed · Loading your accounts...';b.querySelector('.bio-ring').style.borderColor='var(--green)';b.querySelector('.bio-ring').style.animation='none';b.querySelector('.bio-ring').style.boxShadow='0 0 40px var(--green-bg)';},1800);setTimeout(()=>{b.classList.remove('on');document.getElementById('auth').classList.add('hidden');document.getElementById('app').style.display='flex';b.querySelector('.bio-text').textContent='Verifying identity...';b.querySelector('.bio-sub').textContent='Touch sensor or approve on your device';b.querySelector('.bio-ring').style='';},2800);}
+function lock(){document.getElementById('app').style.display='none';document.getElementById('auth').classList.remove('hidden');}
+const vm={home:'v-home',accounts:'v-accounts',transactions:'v-transactions',cards:'v-cards',payees:'v-payees',scheduled:'v-scheduled',directdebits:'v-directdebits',spending:'v-spending',statements:'v-statements',identity:'v-identity',settings:'v-settings'};
+const tm={home:'Home',accounts:'Accounts',transactions:'Transactions',cards:'Cards',payees:'Payees',scheduled:'Scheduled Payments',directdebits:'Direct Debits',spending:'Spending Insights',statements:'Statements',identity:'KERI Identity',settings:'Settings'};
+function nav(id,el){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));const v=document.getElementById(vm[id]);if(v)v.classList.add('active');if(el)el.classList.add('active');document.getElementById('pageTitle').textContent=tm[id]||id;document.getElementById('sidebar').classList.remove('open');}
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-bg').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});});
+const tfp=['tf-between','tf-someone','tf-bpay','tf-intl'];
+function setTransferTab(el){el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');const idx=Array.from(el.parentElement.children).indexOf(el);tfp.forEach((p,i)=>{document.getElementById(p).style.display=i===idx?'block':'none';});}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-bg').forEach(m=>m.classList.remove('open'));if(e.ctrlKey&&e.key==='l'){e.preventDefault();lock();}});
+</script>
+</body>
+</html>
