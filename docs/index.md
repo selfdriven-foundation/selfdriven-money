@@ -303,6 +303,7 @@ It **helps communities create it**.
 - [Human Interface for Sovereign Banking](/interfaces/human/bank)
 - [How It Works](/how-it-works)
 - [Organisational Conductors](/conductors)
+- [Building the Conducting Team](/building-the-conducting-team)
 - [Enablement Reference](/enablement-reference)
 - [Enablement ISO27001 Statement of Applicability](/enablement-iso27001-soa)
 
