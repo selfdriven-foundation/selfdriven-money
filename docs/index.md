@@ -1,5 +1,5 @@
 ---
-layout: prose
+layout: selfdriven
 title: Money | selfdriven
 ---
 
@@ -301,4 +301,11 @@ It **helps communities create it**.
 ---
 
 - [Human Interface for Sovereign Banking](/interfaces/human/bank)
+- [How It Works](/how-it-works)
+- [Organisational Conductors](/conductors)
+- [Enablement Reference](/enablement-reference)
+- [Enablement ISO27001 Statement of Applicability](/enablement-iso27001-soa)
+
+---
+
 - [Organisational Framework for the Speed of Agentic AI](https://actuate.selfdriven.community/framework/organisation-for-speed-agentic-ai)

@@ -1,0 +1,530 @@
+---
+layout: selfdriven
+title: Conductors  - selfdriven Money
+permalink: /conductors
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>selfdriven.money — Organisational Structure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900&1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f2ed;--surface:#edeae3;--surface2:#e5e1d8;--border:#ddd8ce;--border-strong:#ccc7bc;
+  --text:#1a1410;--text2:#3d3428;--muted:#6b5f52;--muted2:#9e9085;
+  --accent:#c8442f;--accent-hover:#b53d2a;--accent-dim:rgba(200,68,47,0.10);--accent-strong:rgba(200,68,47,0.18);
+  --white:#fff;--card-r:20px;
+  --shadow:0 2px 16px rgba(0,0,0,0.06);--shadow-lg:0 12px 48px rgba(0,0,0,0.10);
+  --green:#2d6b3f;--green-bg:rgba(45,107,63,0.10);
+  --blue:#2a5a8c;--blue-bg:rgba(42,90,140,0.10);
+  --amber:#8b6914;--amber-bg:rgba(139,105,20,0.10);
+  --purple:#6b3fa0;--purple-bg:rgba(107,63,160,0.10);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#0a0a0a;--surface:#161616;--surface2:#1e1e1e;--border:#2a2a2a;--border-strong:#3a3a3a;
+    --text:#f0ede8;--text2:#d4cfc6;--muted:#b0a89e;--muted2:#7a7268;
+    --accent:#e85d4a;--accent-hover:#f06b58;--accent-dim:rgba(232,93,74,0.12);--accent-strong:rgba(232,93,74,0.20);
+    --shadow:0 2px 16px rgba(0,0,0,0.4);--shadow-lg:0 12px 48px rgba(0,0,0,0.5);
+    --green:#4ade80;--green-bg:rgba(74,222,128,0.10);
+    --blue:#60a5fa;--blue-bg:rgba(96,165,250,0.10);
+    --amber:#fbbf24;--amber-bg:rgba(251,191,36,0.10);
+    --purple:#a78bfa;--purple-bg:rgba(167,139,250,0.10);
+  }
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;scroll-behavior:smooth;}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 48px;display:flex;align-items:center;justify-content:space-between;background:rgba(245,242,237,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+@media(prefers-color-scheme:dark){nav{background:rgba(10,10,10,0.94);}}
+.nav-l{display:flex;align-items:center;gap:10px;}
+.nav-logo{width:30px;height:30px;border-radius:8px;overflow:hidden;}
+.nav-logo img{width:100%;height:100%;object-fit:cover;display:block;}
+.nav-brand{font-weight:700;font-size:14px;letter-spacing:-0.02em;}
+.nav-brand .m{color:var(--accent);}
+.nav-r{display:flex;align-items:center;gap:20px;}
+.nav-link{font-size:12px;font-weight:500;color:var(--muted);transition:color 0.2s;}
+.nav-link:hover{color:var(--text);}
+
+/* HEADER */
+.header{padding:100px 48px 60px;max-width:1200px;margin:0 auto;}
+.header-eyebrow{font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;}
+.header h1{font-size:clamp(32px,4.5vw,52px);font-weight:900;letter-spacing:-0.045em;line-height:1.05;margin-bottom:16px;}
+.header h1 em{font-style:italic;color:var(--accent);}
+.header-desc{font-size:16px;color:var(--muted);line-height:1.8;max-width:640px;margin-bottom:32px;}
+
+/* PROGRESS BAR */
+.progress-strip{max-width:1200px;margin:0 auto;padding:0 48px 48px;display:flex;align-items:center;gap:16px;}
+.progress-bar{flex:1;height:8px;background:var(--surface);border-radius:99px;overflow:hidden;border:1px solid var(--border);}
+.progress-fill{height:100%;background:var(--accent);border-radius:99px;transition:width 0.6s cubic-bezier(0.4,0,0.2,1);}
+.progress-label{font-size:13px;font-weight:700;color:var(--accent);white-space:nowrap;}
+
+/* GRID */
+.aof-grid{max-width:1200px;margin:0 auto;padding:0 48px 80px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+
+/* AOF CARD */
+.aof-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--card-r);padding:0;position:relative;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:transform 0.3s,box-shadow 0.3s;}
+.aof-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);}
+.aof-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform 0.3s;}
+.aof-card:hover::before,.aof-card.open::before{transform:scaleX(1);}
+.aof-card.open{box-shadow:var(--shadow-lg);}
+.aof-card.filled .aof-status{background:var(--green-bg);color:var(--green);}
+
+.aof-top{padding:24px 24px 20px;}
+.aof-num-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.aof-num{font-size:11px;font-weight:700;letter-spacing:0.06em;color:var(--accent);background:var(--bg);border:1px solid var(--border);border-radius:999px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;}
+@media(prefers-color-scheme:dark){.aof-num{background:#0a0a0a;border-color:#333;}}
+.aof-status{font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:4px 10px;border-radius:99px;background:var(--amber-bg);color:var(--amber);}
+.aof-title{font-size:17px;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px;}
+.aof-subtitle{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:0;}
+
+/* CONDUCTOR SECTION */
+.aof-conductor{padding:0 24px 20px;border-top:1px solid var(--border);margin-top:0;padding-top:16px;}
+.conductor-label{font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted2);margin-bottom:10px;}
+.conductor-slot{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg);border:1.5px dashed var(--border);border-radius:14px;transition:all 0.3s;}
+@media(prefers-color-scheme:dark){.conductor-slot{background:#0e0e0e;}}
+.conductor-slot.filled{border-style:solid;border-color:var(--green);background:var(--green-bg);}
+.conductor-avatar{width:40px;height:40px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;font-weight:700;font-size:14px;color:var(--muted2);flex-shrink:0;overflow:hidden;}
+.conductor-slot.filled .conductor-avatar{background:var(--accent);color:var(--white);}
+.conductor-info{flex:1;min-width:0;}
+.conductor-name{font-size:13px;font-weight:600;color:var(--text);}
+.conductor-role{font-size:11px;color:var(--muted);margin-top:1px;}
+.conductor-slot:not(.filled) .conductor-name{color:var(--muted2);font-style:italic;font-weight:500;}
+
+/* EXPAND PANEL */
+.aof-expand{max-height:0;overflow:hidden;transition:max-height 0.5s cubic-bezier(0.4,0,0.2,1);background:var(--bg);border-top:0px solid var(--border);}
+@media(prefers-color-scheme:dark){.aof-expand{background:#0e0e0e;}}
+.aof-card.open .aof-expand{max-height:800px;border-top-width:1px;}
+.aof-expand-inner{padding:20px 24px 24px;}
+.expand-section{margin-bottom:18px;}
+.expand-label{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+.expand-text{font-size:13px;color:var(--muted);line-height:1.7;}
+.agent-list{display:flex;flex-direction:column;gap:6px;}
+.agent-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:12px;}
+.agent-icon{width:28px;height:28px;border-radius:8px;background:var(--accent-dim);display:grid;place-items:center;flex-shrink:0;color:var(--accent);}
+.agent-icon svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;}
+.agent-name{font-weight:600;color:var(--text);}
+.agent-desc{font-size:11px;color:var(--muted);margin-left:auto;}
+.kpi-row{display:flex;gap:8px;flex-wrap:wrap;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 14px;flex:1;min-width:100px;text-align:center;}
+.kpi-val{font-size:16px;font-weight:800;color:var(--accent);letter-spacing:-0.03em;}
+.kpi-label{font-size:10px;color:var(--muted);margin-top:2px;}
+
+/* PHILOSOPHY SECTION */
+.philosophy{max-width:1200px;margin:0 auto;padding:0 48px 80px;}
+.phil-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--card-r);padding:48px;position:relative;overflow:hidden;box-shadow:var(--shadow);}
+.phil-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);}
+.phil-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;}
+.phil-left h2{font-size:28px;font-weight:800;letter-spacing:-0.04em;margin-bottom:12px;line-height:1.1;}
+.phil-left h2 em{color:var(--accent);font-style:italic;}
+.phil-left p{font-size:14px;color:var(--muted);line-height:1.8;}
+.phil-right{display:flex;flex-direction:column;gap:12px;}
+.phil-item{display:flex;gap:14px;align-items:flex-start;}
+.phil-icon{width:36px;height:36px;border-radius:10px;background:var(--accent-dim);display:grid;place-items:center;flex-shrink:0;color:var(--accent);}
+.phil-icon svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;}
+.phil-item-title{font-size:13px;font-weight:700;margin-bottom:2px;}
+.phil-item-desc{font-size:12px;color:var(--muted);line-height:1.6;}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:32px 48px;max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
+.footer-l{display:flex;align-items:center;gap:8px;}
+.footer-logo{width:18px;height:18px;border-radius:4px;overflow:hidden;opacity:0.7;}
+.footer-logo img{width:100%;height:100%;object-fit:cover;}
+.footer-text{font-size:11px;color:var(--muted2);}
+.footer-links{display:flex;gap:20px;list-style:none;}
+.footer-links a{font-size:11px;color:var(--muted2);transition:color 0.2s;}
+.footer-links a:hover{color:var(--muted);}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(20px);transition:all 0.6s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  nav,.header,.progress-strip,.aof-grid,.philosophy{padding-left:24px;padding-right:24px;}
+  .aof-grid{grid-template-columns:repeat(2,1fr);}
+  .phil-grid{grid-template-columns:1fr;}
+  footer{padding:24px;flex-direction:column;gap:12px;}
+}
+@media(max-width:600px){
+  .aof-grid{grid-template-columns:1fr;}
+  .header h1{font-size:28px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-l">
+    <div class="nav-logo"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAMgAyADASIAAhEBAxEB/8QAHAABAQEBAAMBAQAAAAAAAAAAAAIBBwUGCAQD/8QAPBABAAIBAwIDAwgLAAICAwAAAAECAwQFEQZRITFhB0GyEiI1NnF0gZMTFhcjMlNVYnPR8DORFUJSobH/xAAbAQEAAwEBAQEAAAAAAAAAAAAAAQUGAgQDB//EADQRAQABAgMDCAoDAQEAAAAAAAABAhEDBAUxUeESEyEyQXGxwQYVFiIzUmGBkaEjNEJDFP/aAAwDAQACEQMRAD8A/kA/On7cAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADxu/btg2rTfKtxfNaP3ePnz9Z9H69vy2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" alt="selfdriven"></div>
+    <span class="nav-brand">selfdriven<span class="m">.money</span></span>
+  </div>
+  <div class="nav-r">
+    <a class="nav-link" href="https://actuate.selfdriven.community/framework/areas-of-focus" target="_blank">Framework</a>
+    <a class="nav-link" href="https://selfdriven.services" target="_blank">Services</a>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-eyebrow">Organisational Structure</div>
+  <h1>Eight areas. Eight <em>conductors.</em><br>Infinite agents.</h1>
+  <p class="header-desc">selfdriven.money is organised around the selfdriven Foundation\u2019s 8 Areas of Focus. Each area is led by a human conductor who orchestrates AI agents, sets direction, and ensures accountability. This is the team we\u2019re building.</p>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-strip">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:12.5%"></div></div>
+  <div class="progress-label" id="progressLabel">1 / 8 conductors appointed</div>
+</div>
+
+<!-- AOF GRID -->
+<div class="aof-grid" id="aofGrid">
+</div>
+
+<!-- PHILOSOPHY -->
+<div class="philosophy">
+  <div class="phil-card">
+    <div class="phil-grid">
+      <div class="phil-left">
+        <h2>The <em>human conductor</em> model</h2>
+        <p>In the selfdriven model, organisations are not hierarchies of managers. They are networks of human conductors \u2014 each responsible for a domain of focus \u2014 who orchestrate teams of AI agents to execute operational tasks. The conductor sets intent, provides judgment, maintains relationships, and ensures ethical accountability. The agents handle volume, consistency, and speed.</p>
+        <p style="margin-top:16px;">Each conductor dedicates approximately 70% of their energy to their primary area of focus, with the remaining 30% distributed across supporting areas. This creates overlap, resilience, and cross-domain awareness.</p>
+      </div>
+      <div class="phil-right">
+        <div class="phil-item">
+          <div class="phil-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5 21v-2a7 7 0 0114 0v2"/></svg></div>
+          <div><div class="phil-item-title">Human conductors set direction</div><div class="phil-item-desc">Strategic decisions, relationship building, ethical oversight, and regulatory engagement require human judgment, empathy, and accountability.</div></div>
+        </div>
+        <div class="phil-item">
+          <div class="phil-icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/><path d="M9 15h6"/></svg></div>
+          <div><div class="phil-item-title">AI agents execute at scale</div><div class="phil-item-desc">Transaction monitoring, compliance screening, customer onboarding, reporting, and operational workflows are delegated to autonomous agents operating under KERI-delegated AIDs.</div></div>
+        </div>
+        <div class="phil-item">
+          <div class="phil-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div><div class="phil-item-title">Trust is cryptographic</div><div class="phil-item-desc">Every conductor holds a KERI AID with an ACDC role credential. Every agent operates under a delegated AID. Authority is scoped, verifiable, and revocable.</div></div>
+        </div>
+        <div class="phil-item">
+          <div class="phil-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <div><div class="phil-item-title">70/30 focus distribution</div><div class="phil-item-desc">Each conductor invests 70% in their primary area and 30% across supporting areas \u2014 creating resilience, cross-pollination, and no single points of failure.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-l">
+    <div class="footer-logo"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAMgAyADASIAAhEBAxEB/8QAHAABAQEBAAMBAQAAAAAAAAAAAAIBBwUGCAQD/8QAPBABAAIBAwIDAwgLAAICAwAAAAECAwQFEQZRITFhB0GyEiI1NnF0gZMTFhcjMlNVYnPR8DORFUJSobH/xAAbAQEAAwEBAQEAAAAAAAAAAAAAAQUGAgQDB//EADQRAQABAgMDCAoDAQEAAAAAAAABAhEDBAUxUeESEyEyQXGxwQYVFiIzUmGBkaEjNEJDFP/aAAwDAQACEQMRAD8A/kA/On7cAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADxu/btg2rTfKtxfNaP3ePnz9Z9H69vy2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" alt="selfdriven"></div>
+    <span class="footer-text">selfdriven.money \u00B7 selfdriven Foundation \u00B7 2026</span>
+  </div>
+  <ul class="footer-links">
+    <li><a href="https://selfdriven.services">Services</a></li>
+    <li><a href="https://actuate.selfdriven.community/framework/areas-of-focus">Framework</a></li>
+  </ul>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// AOF DATA
+// ═══════════════════════════════════════════════════════════════
+const areas = [
+  {
+    num: "01", title: "Direction",
+    subtitle: "Strategy, vision, and regulatory roadmap",
+    conductor: { name: "selfdriven Actuation Team Member", initials: "sd", role: "Conductor \u00B7 Strategic Lead", filled: true },
+    description: "Direction establishes the strategic compass for selfdriven.money. It owns the APRA licensing roadmap, market positioning, product vision, and governance framework. The Direction conductor ensures all other areas align toward a coherent strategic outcome.",
+    responsibilities: [
+      "Set and communicate strategic vision across all areas of focus",
+      "Own the APRA ADI licensing strategy and regulatory relationship",
+      "Chair the Executive Committee; interface with Board of Directors",
+      "Approve material decisions (>00k) with Board ratification",
+      "Maintain the selfdriven.money strategic roadmap and OKRs",
+    ],
+    agents: [
+      { name: "Strategy Agent", desc: "Market analysis, competitor monitoring", icon: "chart" },
+      { name: "Governance Agent", desc: "Board paper preparation, decision logging", icon: "doc" },
+      { name: "Regulatory Watch", desc: "APRA/ASIC/AUSTRAC change tracking", icon: "shield" },
+    ],
+    kpis: [
+      { val: "Q2\u201926", label: "ADI licence target" },
+      { val: "8/8", label: "Areas staffed" },
+      { val: "100%", label: "OKR completion" },
+    ],
+  },
+  {
+    num: "02", title: "Engagement",
+    subtitle: "Community, partnerships, and ecosystem",
+    conductor: { name: "Open Position", initials: "?", role: "Head of Engagement \u00B7 Community Lead", filled: false },
+    description: "Engagement governs how selfdriven.money builds and maintains relationships with customers, community, ecosystem partners (Cardano, KERI, NuNet), and regulators. The Engagement conductor creates the web-of-trust acquisition model and drives community banking.",
+    responsibilities: [
+      "Build and nurture the selfdriven.money customer community",
+      "Develop ecosystem partnerships (Cardano, KERI/SSI, traditional finance)",
+      "Own the customer acquisition strategy and referral programmes",
+      "Manage brand, communications, and public relations",
+      "Represent selfdriven.money at industry events and ecosystem forums",
+    ],
+    agents: [
+      { name: "Community Agent", desc: "Member onboarding, engagement tracking", icon: "users" },
+      { name: "Partnership Agent", desc: "Partner discovery, relationship CRM", icon: "link" },
+      { name: "Comms Agent", desc: "Content scheduling, social monitoring", icon: "message" },
+    ],
+    kpis: [
+      { val: "1,000", label: "Founding customers" },
+      { val: "12", label: "Ecosystem partners" },
+      { val: "85%", label: "NPS target" },
+    ],
+  },
+  {
+    num: "03", title: "Enablement",
+    subtitle: "Education, onboarding, and developer tools",
+    conductor: { name: "Open Position", initials: "?", role: "Head of Enablement \u00B7 Education Lead", filled: false },
+    description: "Enablement ensures every participant \u2014 customers, staff, developers, and partners \u2014 has the knowledge and tools to operate effectively. The Enablement conductor owns financial literacy, SSI onboarding, developer APIs, and the skills framework.",
+    responsibilities: [
+      "Design and deliver customer financial literacy programmes",
+      "Own the SSI/passkey onboarding experience (zero-crypto-knowledge required)",
+      "Publish and maintain CDR Open Banking APIs and developer documentation",
+      "Manage the A2A/SKILL.MD agent protocol integration",
+      "Develop staff competency pathways using the selfdriven skills framework",
+    ],
+    agents: [
+      { name: "Onboarding Agent", desc: "Guided account creation, KYC flow", icon: "user-plus" },
+      { name: "Education Agent", desc: "Financial literacy content delivery", icon: "book" },
+      { name: "DevRel Agent", desc: "API documentation, SDK support", icon: "code" },
+    ],
+    kpis: [
+      { val: "<10m", label: "Onboarding time" },
+      { val: "95%", label: "First-use success" },
+      { val: "50+", label: "API integrations" },
+    ],
+  },
+  {
+    num: "04", title: "Protocols",
+    subtitle: "Identity infrastructure and technical standards",
+    conductor: { name: "Open Position", initials: "?", role: "Chief Technology Officer \u00B7 Protocol Lead", filled: false },
+    description: "Protocols define the technical standards that make selfdriven.money trustworthy. This is where trust-by-architecture becomes concrete: KERI/ACDC identity, FIDO2 passkeys, banking protocol integration (NPP, BPAY, SWIFT, CDR), and the three-layer cryptographic trust model.",
+    responsibilities: [
+      "Own and operate the KERI identity infrastructure and witness network",
+      "Implement and maintain FIDO2/WebAuthn passkey authentication",
+      "Integrate banking protocols: NPP/PayID, BPAY, SWIFT, Visa/Mastercard",
+      "Ensure CDR Open Banking API compliance and performance SLAs",
+      "Manage the three-layer cryptographic trust architecture",
+    ],
+    agents: [
+      { name: "KERI Witness Agent", desc: "Key event log witness operations", icon: "shield" },
+      { name: "Payment Gateway Agent", desc: "NPP/BPAY/SWIFT routing", icon: "zap" },
+      { name: "CDR Compliance Agent", desc: "API versioning, schema validation", icon: "check" },
+    ],
+    kpis: [
+      { val: "99.99%", label: "Uptime SLA" },
+      { val: "3/3", label: "Witnesses active" },
+      { val: "<200ms", label: "API p95 latency" },
+    ],
+  },
+  {
+    num: "05", title: "Sustainability",
+    subtitle: "Revenue, capital, and long-term viability",
+    conductor: { name: "Open Position", initials: "?", role: "Chief Financial Officer \u00B7 Sustainability Lead", filled: false },
+    description: "Sustainability ensures selfdriven.money can operate indefinitely without compromising its principles. The Sustainability conductor owns the revenue model, capital adequacy (Basel III), treasury management, and ACDC-attested reserve transparency.",
+    responsibilities: [
+      "Own the revenue model: NIM, interchange, FX margin, credential services",
+      "Maintain APRA capital adequacy ratios and liquidity requirements",
+      "Manage treasury operations and investment portfolio",
+      "Publish ACDC-attested capital reserve positions for depositor transparency",
+      "Oversee financial planning, budgeting, and board financial reporting",
+    ],
+    agents: [
+      { name: "Treasury Agent", desc: "Liquidity monitoring, cash flow forecasting", icon: "dollar" },
+      { name: "Capital Agent", desc: "Basel III ratio calculation, stress testing", icon: "chart" },
+      { name: "Revenue Agent", desc: "Product profitability analysis, pricing", icon: "trending" },
+    ],
+    kpis: [
+      { val: ">10.5%", label: "CET1 ratio" },
+      { val: ">100%", label: "LCR target" },
+      { val: "24mo", label: "Runway target" },
+    ],
+  },
+  {
+    num: "06", title: "Processes",
+    subtitle: "Operations, workflows, and service delivery",
+    conductor: { name: "Open Position", initials: "?", role: "Head of Operations \u00B7 Process Lead", filled: false },
+    description: "Processes define the operational workflows that deliver banking services reliably, compliantly, and at scale. The Processes conductor owns account origination, transaction processing, lending operations, and incident/change management.",
+    responsibilities: [
+      "Own end-to-end account origination and lifecycle management",
+      "Manage transaction processing across all payment channels",
+      "Oversee lending operations: application, assessment, settlement",
+      "Maintain incident response and change management procedures",
+      "Ensure all process changes are recorded as KERI interaction events",
+    ],
+    agents: [
+      { name: "Origination Agent", desc: "Account opening, PayID registration", icon: "user-plus" },
+      { name: "Transaction Agent", desc: "Payment routing, settlement", icon: "zap" },
+      { name: "Lending Agent", desc: "Credit assessment, loan servicing", icon: "home" },
+    ],
+    kpis: [
+      { val: "<10m", label: "Account open time" },
+      { val: "99.9%", label: "Payment STP rate" },
+      { val: "<2hr", label: "P1 incident MTTR" },
+    ],
+  },
+  {
+    num: "07", title: "Accountability",
+    subtitle: "Compliance, audit, and governance transparency",
+    conductor: { name: "Open Position", initials: "?", role: "Chief Risk Officer \u00B7 Accountability Lead", filled: false },
+    description: "Accountability ensures selfdriven.money is answerable to customers, regulators, and community through cryptographic proof \u2014 not opaque institutional processes. The Accountability conductor owns regulatory compliance, audit trails, ISMS (ISO 27001), and stakeholder reporting.",
+    responsibilities: [
+      "Own the ISMS aligned to ISO 27001:2022 and APRA CPS 234",
+      "Manage AML/CTF compliance and AUSTRAC reporting obligations",
+      "Ensure ACDC-attested regulatory reports for APRA, ASIC, AUSTRAC",
+      "Oversee internal audit programme and external certification",
+      "Maintain the KERI-verified governance transparency framework",
+    ],
+    agents: [
+      { name: "Compliance Agent", desc: "AML screening, sanctions checks, SMR filing", icon: "shield" },
+      { name: "Audit Agent", desc: "Control testing, evidence collection", icon: "check" },
+      { name: "Reporting Agent", desc: "APRA/AUSTRAC automated submissions", icon: "doc" },
+    ],
+    kpis: [
+      { val: "0", label: "Regulatory breaches" },
+      { val: "100%", label: "CPS 234 compliance" },
+      { val: "<24hr", label: "SMR filing time" },
+    ],
+  },
+  {
+    num: "08", title: "Organisational",
+    subtitle: "Structure, team design, and culture",
+    conductor: { name: "Open Position", initials: "?", role: "Head of People \u00B7 Organisational Lead", filled: false },
+    description: "The Organisational area defines how all other areas are structured into a functioning entity. The Organisational conductor owns corporate structure, team design, role allocation, culture, and the decentralised operations model.",
+    responsibilities: [
+      "Design and maintain the organisational structure and role framework",
+      "Own recruitment, onboarding, and retention for all conductor positions",
+      "Manage the 70/30 focus distribution model across areas",
+      "Foster a culture of sovereignty, transparency, and remote-first collaboration",
+      "Administer ACDC role credentials and KERI-authenticated access",
+    ],
+    agents: [
+      { name: "Recruitment Agent", desc: "Candidate sourcing, screening", icon: "users" },
+      { name: "Culture Agent", desc: "Engagement surveys, pulse checks", icon: "heart" },
+      { name: "Credential Agent", desc: "ACDC role issuance, access lifecycle", icon: "key" },
+    ],
+    kpis: [
+      { val: "8/8", label: "Conductors filled" },
+      { val: ">90%", label: "Engagement score" },
+      { val: "<30d", label: "Time to hire" },
+    ],
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════
+const icons = {
+  chart: '<svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+  doc: '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+  shield: '<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+  users: '<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  link: '<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+  message: '<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+  'user-plus': '<svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>',
+  book: '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+  code: '<svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+  zap: '<svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+  check: '<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+  dollar: '<svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+  trending: '<svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
+  home: '<svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+  heart: '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
+  key: '<svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>',
+};
+
+const grid = document.getElementById('aofGrid');
+
+areas.forEach((area, i) => {
+  const filled = area.conductor.filled;
+  const card = document.createElement('div');
+  card.className = 'aof-card reveal' + (filled ? ' filled' : '');
+  card.style.transitionDelay = (i * 0.06) + 's';
+  card.innerHTML = `
+    <div class="aof-top" onclick="toggleCard(this.parentElement)">
+      <div class="aof-num-row">
+        <div class="aof-num">${area.num}</div>
+        <div class="aof-status">${filled ? 'APPOINTED' : 'OPEN'}</div>
+      </div>
+      <div class="aof-title">${area.title}</div>
+      <div class="aof-subtitle">${area.subtitle}</div>
+    </div>
+    <div class="aof-conductor">
+      <div class="conductor-label">Human Conductor</div>
+      <div class="conductor-slot ${filled ? 'filled' : ''}">
+        <div class="conductor-avatar">${filled ? area.conductor.initials : '?'}</div>
+        <div class="conductor-info">
+          <div class="conductor-name">${area.conductor.name}</div>
+          <div class="conductor-role">${area.conductor.role}</div>
+        </div>
+      </div>
+    </div>
+    <div class="aof-expand">
+      <div class="aof-expand-inner">
+        <div class="expand-section">
+          <div class="expand-label">About This Area</div>
+          <div class="expand-text">${area.description}</div>
+        </div>
+        <div class="expand-section">
+          <div class="expand-label">Conductor Responsibilities</div>
+          <div class="expand-text">${area.responsibilities.map(r => '\u2014 ' + r).join('<br>')}</div>
+        </div>
+        <div class="expand-section">
+          <div class="expand-label">AI Agents (KERI-Delegated)</div>
+          <div class="agent-list">
+            ${area.agents.map(a => `
+              <div class="agent-row">
+                <div class="agent-icon">${icons[a.icon]||icons.zap}</div>
+                <span class="agent-name">${a.name}</span>
+                <span class="agent-desc">${a.desc}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <div class="expand-section">
+          <div class="expand-label">Key Metrics</div>
+          <div class="kpi-row">
+            ${area.kpis.map(k => `<div class="kpi"><div class="kpi-val">${k.val}</div><div class="kpi-label">${k.label}</div></div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  grid.appendChild(card);
+});
+
+// Toggle expand
+function toggleCard(card) {
+  const wasOpen = card.classList.contains('open');
+  document.querySelectorAll('.aof-card').forEach(c => c.classList.remove('open'));
+  if (!wasOpen) card.classList.add('open');
+}
+
+// Progress
+function updateProgress() {
+  const filled = areas.filter(a => a.conductor.filled).length;
+  document.getElementById('progressFill').style.width = ((filled / 8) * 100) + '%';
+  document.getElementById('progressLabel').textContent = filled + ' / 8 conductors appointed';
+}
+updateProgress();
+
+// Scroll reveal
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal, .aof-card').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
