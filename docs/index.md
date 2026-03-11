@@ -301,6 +301,7 @@ It **helps communities create it**.
 ---
 
 - [Human Interface for Sovereign Banking](/interfaces/human/bank)
+- [Human Interface for Sovereign Payments](/interfaces/human/pay)
 - [How It Works](/how-it-works)
 - [Organisational Conductors](/conductors)
 - [Building the Conducting Team](/building-the-conducting-team)

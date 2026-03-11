@@ -1,0 +1,1861 @@
+---
+layout: null
+title: Pay - Human Interface - selfdriven Money 
+permalink: /interfaces/human/pay
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>selfdriven.money/pay — Accept Cardano Payments</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════
+   DESIGN TOKENS
+   ═══════════════════════════════════════════════════ */
+:root {
+  --bg: #f5f2ed;
+  --surface: #edeae3;
+  --surface2: #e5e1d8;
+  --border: #ddd8ce;
+  --text: #1a1410;
+  --muted: #6b5f52;
+  --muted2: #9e9085;
+  --accent: #c8442f;
+  --accent-dim: rgba(200, 68, 47, 0.10);
+  --accent-strong: rgba(200, 68, 47, 0.18);
+  --accent-glow: rgba(200, 68, 47, 0.25);
+  --success: #2d8a56;
+  --success-dim: rgba(45, 138, 86, 0.12);
+  --warning: #c48a1a;
+  --warning-dim: rgba(196, 138, 26, 0.12);
+  --error: #c44040;
+  --error-dim: rgba(196, 64, 64, 0.12);
+  --card-radius: 20px;
+  --shadow: 0 2px 16px rgba(0,0,0,0.07);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.10);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0a0a0a;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --border: #2a2a2a;
+    --text: #f0ede8;
+    --muted: #b0a89e;
+    --muted2: #7a7268;
+    --accent: #e85d4a;
+    --accent-dim: rgba(232, 93, 74, 0.12);
+    --accent-strong: rgba(232, 93, 74, 0.20);
+    --accent-glow: rgba(232, 93, 74, 0.30);
+    --success: #4eca7a;
+    --success-dim: rgba(78, 202, 122, 0.12);
+    --warning: #e8a832;
+    --warning-dim: rgba(232, 168, 50, 0.12);
+    --error: #e86060;
+    --error-dim: rgba(232, 96, 96, 0.12);
+    --shadow: 0 2px 16px rgba(0,0,0,0.4);
+    --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+::selection { background: var(--accent-strong); color: var(--text); }
+
+/* ═══════════════════════════════════════════════════
+   LAYOUT SHELL
+   ═══════════════════════════════════════════════════ */
+.app-shell { display: flex; min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  width: 280px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sidebar-header {
+  padding: 24px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.logo-mark {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.logo-text {
+  font-weight: 800; font-size: 15px;
+  letter-spacing: -0.04em;
+  color: var(--text);
+}
+.logo-text span { color: var(--accent); }
+
+.sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+.nav-group { margin-bottom: 20px; }
+.nav-group-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted2); padding: 0 8px; margin-bottom: 6px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 13.5px; font-weight: 500;
+  color: var(--muted);
+  transition: all 0.15s;
+  position: relative;
+  user-select: none;
+}
+.nav-item:hover { background: var(--accent-dim); color: var(--text); }
+.nav-item.active {
+  background: var(--accent-strong);
+  color: var(--accent);
+  font-weight: 600;
+}
+.nav-item.active::before {
+  content: '';
+  position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 20px;
+  background: var(--accent);
+  border-radius: 0 3px 3px 0;
+}
+.nav-icon { width: 18px; height: 18px; opacity: 0.7; flex-shrink: 0; }
+.nav-item.active .nav-icon { opacity: 1; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--accent);
+  color: white;
+  font-size: 10px; font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 99px;
+}
+
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+}
+.identity-card {
+  background: var(--surface2);
+  border-radius: 14px;
+  padding: 14px;
+  border: 1px solid var(--border);
+}
+.identity-card-label {
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 6px;
+}
+.identity-aid {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--muted);
+  word-break: break-all; line-height: 1.5;
+}
+.identity-status {
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 8px; font-size: 11px; font-weight: 600;
+}
+.status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--success);
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(45, 138, 86, 0.4); }
+  50% { box-shadow: 0 0 0 4px rgba(45, 138, 86, 0); }
+}
+
+/* MAIN CONTENT */
+.main-content {
+  flex: 1;
+  margin-left: 280px;
+  min-height: 100vh;
+}
+.topbar {
+  position: sticky; top: 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  z-index: 50;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.topbar-left { display: flex; align-items: center; gap: 16px; }
+.page-title {
+  font-size: 20px; font-weight: 800;
+  letter-spacing: -0.04em;
+}
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.keri-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--success-dim);
+  color: var(--success);
+  font-size: 11px; font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 99px;
+  border: 1px solid transparent;
+}
+.topbar-btn {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--muted);
+}
+.topbar-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.content-area { padding: 28px 32px; max-width: 1200px; }
+
+/* ═══════════════════════════════════════════════════
+   DASHBOARD VIEW
+   ═══════════════════════════════════════════════════ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+.stat-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: var(--accent);
+}
+.stat-card:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+.stat-label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.stat-value {
+  font-size: 26px; font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--text);
+}
+.stat-value .currency {
+  font-size: 14px; font-weight: 600;
+  color: var(--muted); margin-left: 2px;
+}
+.stat-change {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 11px; font-weight: 600;
+  margin-top: 6px; padding: 2px 8px;
+  border-radius: 99px;
+}
+.stat-change.up { background: var(--success-dim); color: var(--success); }
+.stat-change.down { background: var(--error-dim); color: var(--error); }
+
+/* SECTION CARDS */
+.section-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.section-header {
+  padding: 18px 22px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.section-title {
+  font-size: 15px; font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.section-body { padding: 0; }
+
+/* TABLE */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.data-table th {
+  text-align: left;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted2);
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.data-table td {
+  padding: 14px 18px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--accent-dim); }
+
+.tx-hash {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  cursor: pointer;
+}
+.tx-hash:hover { color: var(--accent); text-decoration: underline; }
+
+.status-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 99px;
+}
+.status-badge.confirmed { background: var(--success-dim); color: var(--success); }
+.status-badge.pending { background: var(--warning-dim); color: var(--warning); }
+.status-badge.expired { background: var(--error-dim); color: var(--error); }
+
+/* BUTTONS */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px; font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+.btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 16px var(--accent-glow); }
+.btn-outline {
+  background: transparent;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+}
+.btn-outline:hover { background: var(--accent-dim); }
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1.5px solid var(--border);
+}
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+.btn-lg { padding: 14px 32px; font-size: 15px; }
+
+/* ═══════════════════════════════════════════════════
+   CREATE PAYMENT VIEW
+   ═══════════════════════════════════════════════════ */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.form-full { grid-column: 1 / -1; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted);
+}
+.form-input, .form-select, .form-textarea {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px; font-weight: 500;
+  padding: 12px 16px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  color: var(--text);
+  transition: all 0.15s;
+  outline: none;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+.form-input::placeholder { color: var(--muted2); }
+.form-textarea { resize: vertical; min-height: 80px; }
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239e9085' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+.form-hint {
+  font-size: 11px; color: var(--muted2);
+  margin-top: 2px;
+}
+
+/* PAYMENT PREVIEW */
+.payment-preview {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  padding: 24px;
+  text-align: center;
+}
+.preview-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 16px;
+}
+.preview-amount {
+  font-size: 42px; font-weight: 900;
+  letter-spacing: -0.04em;
+  margin-bottom: 4px;
+}
+.preview-fiat {
+  font-size: 14px; font-weight: 500;
+  color: var(--muted); margin-bottom: 20px;
+}
+
+/* QR CODE */
+.qr-container {
+  width: 200px; height: 200px;
+  margin: 0 auto 16px;
+  background: white;
+  border-radius: 16px;
+  padding: 12px;
+  display: flex; align-items: center; justify-content: center;
+}
+.qr-container canvas { border-radius: 8px; }
+
+/* ═══════════════════════════════════════════════════
+   CHECKOUT MODAL
+   ═══════════════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+  opacity: 0; visibility: hidden;
+  transition: all 0.3s;
+}
+.modal-overlay.open { opacity: 1; visibility: visible; }
+.modal-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  width: 460px;
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+.modal-overlay.open .modal-content { transform: translateY(0); }
+.modal-accent-bar {
+  height: 3px; background: var(--accent);
+  border-radius: var(--card-radius) var(--card-radius) 0 0;
+}
+.modal-header {
+  padding: 20px 24px 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-title {
+  font-size: 18px; font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.modal-close {
+  width: 32px; height: 32px;
+  border-radius: 8px; border: none;
+  background: var(--surface2);
+  color: var(--muted);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  transition: all 0.15s;
+}
+.modal-close:hover { color: var(--accent); background: var(--accent-dim); }
+.modal-body { padding: 20px 24px 24px; }
+
+/* ═══════════════════════════════════════════════════
+   CHECKOUT PAGE
+   ═══════════════════════════════════════════════════ */
+.checkout-wrap {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 32px;
+  background: var(--bg);
+}
+.checkout-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  width: 440px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.checkout-accent { height: 3px; background: var(--accent); }
+.checkout-header {
+  padding: 24px 28px 0;
+  text-align: center;
+}
+.checkout-merchant {
+  font-size: 12px; font-weight: 600;
+  color: var(--muted); margin-bottom: 4px;
+}
+.checkout-desc {
+  font-size: 16px; font-weight: 700;
+  letter-spacing: -0.02em; margin-bottom: 4px;
+}
+.checkout-body { padding: 20px 28px 28px; text-align: center; }
+.checkout-amount {
+  font-size: 48px; font-weight: 900;
+  letter-spacing: -0.04em;
+  margin-bottom: 2px;
+}
+.checkout-amount-sub {
+  font-size: 14px; color: var(--muted);
+  margin-bottom: 20px;
+}
+.checkout-address-box {
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+.checkout-address-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted2); margin-bottom: 6px;
+}
+.checkout-address {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text);
+  word-break: break-all;
+  line-height: 1.6;
+}
+.checkout-timer {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-size: 13px; font-weight: 600;
+  color: var(--warning);
+  margin-top: 16px;
+}
+.checkout-timer-icon { font-size: 16px; }
+.checkout-footer {
+  padding: 16px 28px;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  font-size: 11px; color: var(--muted2);
+}
+.checkout-keri {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-weight: 600; color: var(--accent);
+}
+
+/* ═══════════════════════════════════════════════════
+   API KEYS VIEW
+   ═══════════════════════════════════════════════════ */
+.api-key-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.api-key-row:last-child { border-bottom: none; }
+.api-key-value {
+  flex: 1;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--bg);
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.api-key-meta { min-width: 120px; }
+.api-key-name { font-size: 13px; font-weight: 600; }
+.api-key-date { font-size: 11px; color: var(--muted2); }
+
+/* CODE BLOCK */
+.code-block {
+  background: #1a1410;
+  border-radius: 14px;
+  padding: 20px;
+  overflow-x: auto;
+  margin: 16px 0;
+}
+@media (prefers-color-scheme: dark) {
+  .code-block { background: #111; }
+}
+.code-block code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #e8e0d6;
+  line-height: 1.7;
+  white-space: pre;
+}
+.code-block .kw { color: #e85d4a; }
+.code-block .str { color: #4eca7a; }
+.code-block .cmt { color: #6b5f52; }
+.code-block .fn { color: #e8a832; }
+
+/* ═══════════════════════════════════════════════════
+   SETTINGS VIEW
+   ═══════════════════════════════════════════════════ */
+.settings-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-info { flex: 1; }
+.settings-name { font-size: 14px; font-weight: 600; }
+.settings-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* TOGGLE */
+.toggle {
+  width: 44px; height: 24px;
+  border-radius: 12px;
+  background: var(--border);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.toggle.on { background: var(--accent); }
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: white;
+  transition: transform 0.2s;
+}
+.toggle.on::after { transform: translateX(20px); }
+
+/* ═══════════════════════════════════════════════════
+   WEBHOOK VIEW
+   ═══════════════════════════════════════════════════ */
+.webhook-url-row {
+  display: flex; gap: 10px;
+  padding: 18px 22px;
+}
+.webhook-url-row .form-input { flex: 1; }
+
+/* ═══════════════════════════════════════════════════
+   EMPTY STATE
+   ═══════════════════════════════════════════════════ */
+.empty-state {
+  text-align: center;
+  padding: 60px 24px;
+  color: var(--muted);
+}
+.empty-icon {
+  font-size: 48px; margin-bottom: 16px; opacity: 0.3;
+}
+.empty-title {
+  font-size: 16px; font-weight: 700;
+  color: var(--text); margin-bottom: 6px;
+}
+.empty-desc { font-size: 13px; margin-bottom: 20px; }
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════ */
+.mobile-menu-btn { display: none; }
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main-content { margin-left: 0; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .form-grid { grid-template-columns: 1fr; }
+  .mobile-menu-btn { display: flex; }
+}
+@media (max-width: 560px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .content-area { padding: 20px 16px; }
+  .topbar { padding: 12px 16px; }
+}
+
+/* ═══════════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════════ */
+.fade-in {
+  opacity: 0; transform: translateY(12px);
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes fadeIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.10s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.20s; }
+
+/* TOAST */
+.toast-container {
+  position: fixed; bottom: 24px; right: 24px;
+  z-index: 2000;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.toast {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 18px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  animation: toastIn 0.3s ease forwards;
+  min-width: 260px;
+}
+.toast.leaving { animation: toastOut 0.3s ease forwards; }
+@keyframes toastIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes toastOut { to { opacity: 0; transform: translateX(30px); } }
+.toast-icon { font-size: 16px; }
+
+/* COPY BTN */
+.copy-btn {
+  background: none; border: none;
+  color: var(--muted); cursor: pointer;
+  font-size: 14px; padding: 4px 8px;
+  border-radius: 6px; transition: all 0.15s;
+}
+.copy-btn:hover { color: var(--accent); background: var(--accent-dim); }
+
+/* TAB BAR */
+.tab-bar {
+  display: flex; gap: 4px;
+  padding: 4px;
+  background: var(--surface2);
+  border-radius: 12px;
+  width: fit-content;
+}
+.tab-btn {
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px; font-weight: 600;
+  border: none; cursor: pointer;
+  background: transparent;
+  color: var(--muted);
+  transition: all 0.15s;
+}
+.tab-btn.active {
+  background: var(--accent);
+  color: white;
+}
+.tab-btn:hover:not(.active) { color: var(--text); }
+
+/* ═══════════════════════════════════════════════════
+   VIEW CONTAINERS
+   ═══════════════════════════════════════════════════ */
+.view { display: none; }
+.view.active { display: block; }
+
+/* CHECKOUT VIEW (public) */
+.checkout-view { display: none; }
+.checkout-view.active { display: flex; }
+
+/* ═══════════════════════════════════════════════════
+   PASSKEY AUTH ANIMATION
+   ═══════════════════════════════════════════════════ */
+.auth-ring {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  border: 3px solid var(--accent-dim);
+  margin: 0 auto 16px;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.auth-ring::after {
+  content: '';
+  position: absolute; inset: -3px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: var(--accent);
+  animation: authSpin 1.2s linear infinite;
+}
+.auth-ring.verified::after {
+  animation: none;
+  border-color: var(--success);
+}
+@keyframes authSpin { to { transform: rotate(360deg); } }
+.auth-icon { font-size: 28px; }
+
+/* CHART AREA */
+.chart-area {
+  height: 180px;
+  padding: 16px 22px;
+  position: relative;
+}
+.chart-svg { width: 100%; height: 100%; }
+.chart-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.chart-fill {
+  fill: var(--accent-dim);
+}
+.chart-grid-line {
+  stroke: var(--border);
+  stroke-width: 0.5;
+}
+.chart-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  fill: var(--muted2);
+}
+
+/* TWO-COL LAYOUT */
+.two-col {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 24px;
+}
+@media (max-width: 900px) {
+  .two-col { grid-template-columns: 1fr; }
+}
+
+/* WALLET SELECTOR */
+.wallet-option {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: 8px;
+}
+.wallet-option:hover { border-color: var(--accent); }
+.wallet-option.selected { border-color: var(--accent); background: var(--accent-dim); }
+.wallet-icon { font-size: 24px; }
+.wallet-name { font-size: 14px; font-weight: 600; }
+.wallet-desc { font-size: 11px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="app-shell" id="appShell">
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img class="logo-mark" src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAMgAyADASIAAhEBAxEB/8QAHAABAQEBAAMBAQAAAAAAAAAAAAIBBwUGCAQD/8QAPBABAAIBAwIDAwgLAAICAwAAAAECAwQFEQZRITFhB0GyEiI1NnF0gZMTFhcjMlNVYnPR8DORFUJSobH/xAAbAQEAAwEBAQEAAAAAAAAAAAAAAQUGAgQDB//EADQRAQABAgMDCAoDAQEAAAAAAAABAhEDBAUxUeESEyEyQXGxwQYVFiIzUmGBkaEjNEJDFP/aAAwDAQACEQMRAD8A/kA/On7cAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADxu/btg2rTfKtxfNaP3ePnz9Z9H69vy2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" alt="selfdriven">
+      <div class="logo-text"><span>self</span>driven<span>.money/pay</span></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group">
+        <div class="nav-group-label">Payments</div>
+        <div class="nav-item active" data-view="dashboard" onclick="switchView('dashboard')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </div>
+        <div class="nav-item" data-view="create" onclick="switchView('create')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Create Payment
+        </div>
+        <div class="nav-item" data-view="transactions" onclick="switchView('transactions')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Transactions
+          <span class="nav-badge">12</span>
+        </div>
+        <div class="nav-item" data-view="checkout-demo" onclick="switchView('checkout-demo')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          Checkout Preview
+        </div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Developer</div>
+        <div class="nav-item" data-view="api-keys" onclick="switchView('api-keys')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+          API Keys
+        </div>
+        <div class="nav-item" data-view="webhooks" onclick="switchView('webhooks')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 16.98h1a4 4 0 0 0 0-8h-1"/><path d="M6 16.98H5a4 4 0 0 1 0-8h1"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Webhooks
+        </div>
+        <div class="nav-item" data-view="docs" onclick="switchView('docs')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Integration Docs
+        </div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Account</div>
+        <div class="nav-item" data-view="settings" onclick="switchView('settings')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </div>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="identity-card">
+        <div class="identity-card-label">KERI Identity</div>
+        <div class="identity-aid">EKE4g_0hDGBOqDLKzNBT3kFOPxoP7wXkqt</div>
+        <div class="identity-status">
+          <span class="status-dot"></span>
+          <span style="color: var(--success)">Verified</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN CONTENT ═══ -->
+  <main class="main-content">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="topbar-btn mobile-menu-btn" onclick="toggleSidebar()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="page-title" id="pageTitle">Dashboard</div>
+      </div>
+      <div class="topbar-right">
+        <div class="keri-pill">
+          <span class="status-dot" style="width:6px;height:6px;"></span>
+          KERI Active
+        </div>
+        <button class="topbar-btn" onclick="showToast('🔔', 'No new notifications')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+        <button class="topbar-btn" onclick="showToast('🔒', 'Session locked via passkey')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══════ DASHBOARD VIEW ═══════ -->
+    <div class="content-area view active" id="view-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card fade-in stagger-1">
+          <div class="stat-label">Total Revenue</div>
+          <div class="stat-value">84,291<span class="currency">ADA</span></div>
+          <div class="stat-change up">↑ 12.4% this month</div>
+        </div>
+        <div class="stat-card fade-in stagger-2">
+          <div class="stat-label">Transactions</div>
+          <div class="stat-value">1,847</div>
+          <div class="stat-change up">↑ 8.2% this month</div>
+        </div>
+        <div class="stat-card fade-in stagger-3">
+          <div class="stat-label">Avg. Payment</div>
+          <div class="stat-value">45.6<span class="currency">ADA</span></div>
+          <div class="stat-change down">↓ 2.1% this month</div>
+        </div>
+        <div class="stat-card fade-in stagger-4">
+          <div class="stat-label">Success Rate</div>
+          <div class="stat-value">98.7<span class="currency">%</span></div>
+          <div class="stat-change up">↑ 0.3% this month</div>
+        </div>
+      </div>
+
+      <div class="section-card fade-in" style="animation-delay:0.25s">
+        <div class="section-header">
+          <div class="section-title">Payment Volume (30 days)</div>
+          <div class="tab-bar">
+            <button class="tab-btn active">7D</button>
+            <button class="tab-btn">30D</button>
+            <button class="tab-btn">90D</button>
+          </div>
+        </div>
+        <div class="chart-area">
+          <svg class="chart-svg" id="volumeChart" viewBox="0 0 700 160" preserveAspectRatio="none"></svg>
+        </div>
+      </div>
+
+      <div class="section-card fade-in" style="animation-delay:0.3s">
+        <div class="section-header">
+          <div class="section-title">Recent Transactions</div>
+          <button class="btn btn-sm btn-outline" onclick="switchView('transactions')">View All</button>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="recentTxTable">
+            <thead>
+              <tr>
+                <th>Transaction</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>KERI Event</th>
+              </tr>
+            </thead>
+            <tbody id="recentTxBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ CREATE PAYMENT VIEW ═══════ -->
+    <div class="content-area view" id="view-create">
+      <div class="two-col">
+        <div>
+          <div class="section-card">
+            <div class="section-header">
+              <div class="section-title">New Payment Request</div>
+            </div>
+            <div style="padding: 22px;">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label">Amount</label>
+                  <input class="form-input" id="payAmount" type="number" step="0.01" placeholder="0.00" oninput="updatePreview()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Currency</label>
+                  <select class="form-select" id="payCurrency" onchange="updatePreview()">
+                    <option value="ADA">ADA (Cardano)</option>
+                    <option value="USD">USD → ADA</option>
+                    <option value="AUD">AUD → ADA</option>
+                    <option value="EUR">EUR → ADA</option>
+                    <option value="GBP">GBP → ADA</option>
+                  </select>
+                </div>
+                <div class="form-group form-full">
+                  <label class="form-label">Description</label>
+                  <input class="form-input" id="payDesc" type="text" placeholder="e.g. Invoice #1042 — Web Development" oninput="updatePreview()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Customer Email (optional)</label>
+                  <input class="form-input" id="payEmail" type="email" placeholder="customer@example.com">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Expiry</label>
+                  <select class="form-select" id="payExpiry">
+                    <option value="15">15 minutes</option>
+                    <option value="30" selected>30 minutes</option>
+                    <option value="60">1 hour</option>
+                    <option value="1440">24 hours</option>
+                    <option value="0">No expiry</option>
+                  </select>
+                </div>
+                <div class="form-group form-full">
+                  <label class="form-label">Metadata / Reference (optional)</label>
+                  <textarea class="form-textarea" id="payMeta" placeholder='{"orderId": "ORD-1042", "customer": "acme-corp"}'></textarea>
+                  <div class="form-hint">JSON metadata attached to the KERI interaction event</div>
+                </div>
+                <div class="form-group form-full" style="margin-top:8px;">
+                  <button class="btn btn-primary btn-lg" onclick="createPayment()" style="width:100%">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                    Generate Payment Link
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="payment-preview" id="paymentPreview">
+            <div class="preview-label">Live Preview</div>
+            <div class="qr-container" id="qrPreview">
+              <canvas id="qrCanvas" width="176" height="176"></canvas>
+            </div>
+            <div class="preview-amount" id="previewAmount">0 <span style="font-size:20px;color:var(--muted)">ADA</span></div>
+            <div class="preview-fiat" id="previewFiat">≈ $0.00 USD</div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:16px" id="previewDesc">Payment description</div>
+            <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+              <button class="btn btn-sm btn-outline" onclick="copyPaymentLink()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy Link
+              </button>
+              <button class="btn btn-sm btn-ghost" onclick="switchView('checkout-demo')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Preview Checkout
+              </button>
+            </div>
+          </div>
+
+          <div class="section-card" style="margin-top:18px;">
+            <div style="padding:18px 22px;">
+              <div class="form-label" style="margin-bottom:10px;">Receiving Address</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);word-break:break-all;background:var(--bg);padding:12px;border-radius:10px;border:1px solid var(--border);">
+                addr1qx2kd28nq8ac5prwg32hhvudlwggpgfp8utlyqxu2a3genj2f6yt7m8h8r9ahx2rl5p06lxpgek8hxqrs3jxk5q9gvz6q4u79c5
+              </div>
+              <div class="form-hint" style="margin-top:8px;">Payments are received directly to your Cardano wallet. No custodial intermediary.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ TRANSACTIONS VIEW ═══════ -->
+    <div class="content-area view" id="view-transactions">
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title">All Transactions</div>
+          <div style="display:flex;gap:8px;">
+            <select class="form-select" style="padding:6px 30px 6px 12px;font-size:12px;border-radius:10px;">
+              <option>All Statuses</option>
+              <option>Confirmed</option>
+              <option>Pending</option>
+              <option>Expired</option>
+            </select>
+            <button class="btn btn-sm btn-ghost" onclick="showToast('📥','Exported transactions.csv')">Export CSV</button>
+          </div>
+        </div>
+        <div class="section-body">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Fiat Value</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>KERI</th>
+              </tr>
+            </thead>
+            <tbody id="allTxBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ CHECKOUT DEMO VIEW ═══════ -->
+    <div class="content-area view" id="view-checkout-demo">
+      <div style="display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 120px);">
+        <div class="checkout-card">
+          <div class="checkout-accent"></div>
+          <div class="checkout-header">
+            <div class="checkout-merchant">selfdriven.services</div>
+            <div class="checkout-desc" id="checkoutDesc">Web Development — Invoice #1042</div>
+          </div>
+          <div class="checkout-body">
+            <div class="checkout-amount" id="checkoutAmount">250 <span style="font-size:20px;color:var(--muted)">ADA</span></div>
+            <div class="checkout-amount-sub" id="checkoutFiat">≈ $175.00 USD</div>
+
+            <div class="qr-container" style="margin:16px auto;">
+              <canvas id="checkoutQr" width="176" height="176"></canvas>
+            </div>
+
+            <div style="margin-bottom:16px;">
+              <div class="wallet-option selected" onclick="selectWallet(this)">
+                <div class="wallet-icon">🦊</div>
+                <div>
+                  <div class="wallet-name">Nami Wallet</div>
+                  <div class="wallet-desc">Browser extension wallet</div>
+                </div>
+              </div>
+              <div class="wallet-option" onclick="selectWallet(this)">
+                <div class="wallet-icon">🌀</div>
+                <div>
+                  <div class="wallet-name">Eternl</div>
+                  <div class="wallet-desc">Full-featured Cardano wallet</div>
+                </div>
+              </div>
+              <div class="wallet-option" onclick="selectWallet(this)">
+                <div class="wallet-icon">📱</div>
+                <div>
+                  <div class="wallet-name">Scan QR Code</div>
+                  <div class="wallet-desc">Pay from any mobile wallet</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="checkout-address-box">
+              <div class="checkout-address-label">Send exactly to this address</div>
+              <div class="checkout-address">
+                addr1qx2kd28nq8ac5prwg32hhvudlwggpgfp8utlyqxu2a3genj2f6yt7m8h8r9ahx2rl5p06lxpgek8hxqrs3jxk5q9gvz6q4u79c5
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-lg" style="width:100%;" onclick="simulatePayment()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Pay with Passkey
+            </button>
+
+            <div class="checkout-timer" id="checkoutTimer">
+              <span class="checkout-timer-icon">⏱</span>
+              <span id="timerDisplay">29:42 remaining</span>
+            </div>
+          </div>
+          <div class="checkout-footer">
+            Secured by
+            <span class="checkout-keri">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              KERI
+            </span>
+            ·
+            <span style="font-family:'JetBrains Mono',monospace;font-size:10px;">selfdriven.money/pay</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ API KEYS VIEW ═══════ -->
+    <div class="content-area view" id="view-api-keys">
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title">API Keys</div>
+          <button class="btn btn-sm btn-primary" onclick="generateApiKey()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            Generate Key
+          </button>
+        </div>
+        <div class="section-body" id="apiKeysBody">
+          <div class="api-key-row">
+            <div class="api-key-meta">
+              <div class="api-key-name">Production</div>
+              <div class="api-key-date">Created 12 Jan 2026</div>
+            </div>
+            <div class="api-key-value">sd_live_kFOPxoP7wXkqt••••••••••••••••</div>
+            <button class="copy-btn" onclick="showToast('📋','Key copied to clipboard')">📋</button>
+          </div>
+          <div class="api-key-row">
+            <div class="api-key-meta">
+              <div class="api-key-name">Test</div>
+              <div class="api-key-date">Created 12 Jan 2026</div>
+            </div>
+            <div class="api-key-value">sd_test_8ac5prwg32hhv••••••••••••••••</div>
+            <button class="copy-btn" onclick="showToast('📋','Key copied to clipboard')">📋</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card" style="margin-top:24px;">
+        <div class="section-header">
+          <div class="section-title">Quick Start</div>
+        </div>
+        <div style="padding:22px;">
+          <div class="code-block"><code><span class="cmt">// Create a payment via the selfdriven.money/pay API</span>
+<span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://api.selfdriven.money/v1/payments'</span>, {
+  method: <span class="str">'POST'</span>,
+  headers: {
+    <span class="str">'Authorization'</span>: <span class="str">'Bearer sd_live_kFOPxoP7wXkqt...'</span>,
+    <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>,
+    <span class="str">'X-KERI-AID'</span>: <span class="str">'EKE4g_0hDGBOqDLKzNBT3kFOPxoP7wXkqt'</span>,
+  },
+  body: JSON.<span class="fn">stringify</span>({
+    amount: <span class="str">250</span>,
+    currency: <span class="str">'ADA'</span>,
+    description: <span class="str">'Invoice #1042'</span>,
+    expiry_minutes: <span class="str">30</span>,
+    metadata: { orderId: <span class="str">'ORD-1042'</span> },
+    callback_url: <span class="str">'https://yoursite.com/webhook'</span>,
+  }),
+});
+
+<span class="kw">const</span> { payment_id, checkout_url, address } = <span class="kw">await</span> response.<span class="fn">json</span>();
+<span class="cmt">// → checkout_url: https://pay.selfdriven.money/c/pay_7f3k...</span>
+<span class="cmt">// → address: addr1qx2kd28nq8ac5prwg32hhv...</span>
+<span class="cmt">// → keriEvent: { type: "ixn", sn: 1709971200000, ... }</span></code></div>
+        </div>
+      </div>
+
+      <div class="section-card" style="margin-top:24px;">
+        <div class="section-header">
+          <div class="section-title">Payment Button Embed</div>
+        </div>
+        <div style="padding:22px;">
+          <div class="code-block"><code><span class="cmt">&lt;!-- selfdriven.money/pay payment button --&gt;</span>
+<span class="kw">&lt;script</span> src=<span class="str">"https://cdn.selfdriven.money/pay.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+<span class="kw">&lt;div</span>
+  id=<span class="str">"sd-pay-button"</span>
+  data-merchant=<span class="str">"EKE4g_0hDGBOqDLKzNBT3kFOPxoP7wXkqt"</span>
+  data-amount=<span class="str">"250"</span>
+  data-currency=<span class="str">"ADA"</span>
+  data-description=<span class="str">"Premium Subscription"</span>
+  data-theme=<span class="str">"auto"</span>
+<span class="kw">&gt;&lt;/div&gt;</span></code></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ WEBHOOKS VIEW ═══════ -->
+    <div class="content-area view" id="view-webhooks">
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title">Webhook Endpoints</div>
+          <button class="btn btn-sm btn-primary" onclick="addWebhook()">+ Add Endpoint</button>
+        </div>
+        <div class="section-body" id="webhooksBody">
+          <div class="settings-row">
+            <div class="settings-info">
+              <div class="settings-name" style="font-family:'JetBrains Mono',monospace;font-size:13px;">https://api.yoursite.com/webhooks/payments</div>
+              <div class="settings-desc">Events: payment.confirmed, payment.expired, payment.pending</div>
+            </div>
+            <div class="status-badge confirmed">Active</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card" style="margin-top:24px;">
+        <div class="section-header">
+          <div class="section-title">Webhook Payload</div>
+        </div>
+        <div style="padding:22px;">
+          <div class="code-block"><code>{
+  <span class="str">"event"</span>: <span class="str">"payment.confirmed"</span>,
+  <span class="str">"payment_id"</span>: <span class="str">"pay_7f3kR9xLm2"</span>,
+  <span class="str">"amount"</span>: <span class="str">250</span>,
+  <span class="str">"currency"</span>: <span class="str">"ADA"</span>,
+  <span class="str">"tx_hash"</span>: <span class="str">"8f2a...c4d1"</span>,
+  <span class="str">"confirmations"</span>: <span class="str">15</span>,
+  <span class="str">"metadata"</span>: { <span class="str">"orderId"</span>: <span class="str">"ORD-1042"</span> },
+  <span class="str">"keriEvent"</span>: {
+    <span class="str">"type"</span>: <span class="str">"ixn"</span>,
+    <span class="str">"aid"</span>: <span class="str">"EKE4g_0hDGBOqDLKzNBT3kFOPxoP7wXkqt"</span>,
+    <span class="str">"sn"</span>: <span class="str">1709971200000</span>,
+    <span class="str">"digest"</span>: <span class="str">"sha256-a1b2c3d4e5f6..."</span>
+  }
+}</code></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ DOCS VIEW ═══════ -->
+    <div class="content-area view" id="view-docs">
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title">Integration Guide</div>
+        </div>
+        <div style="padding:22px;">
+          <div style="font-size:14px;color:var(--muted);line-height:1.8;">
+            <h3 style="font-size:18px;font-weight:800;letter-spacing:-0.03em;color:var(--text);margin-bottom:12px;">Accept ADA Payments in 5 Minutes</h3>
+            <p style="margin-bottom:16px;">selfdriven.money/pay is a non-custodial Cardano payment gateway secured by KERI cryptographic identity. Payments go directly to your wallet — no intermediary holds your funds.</p>
+
+            <div style="display:grid;gap:16px;margin-bottom:24px;">
+              <div style="display:flex;gap:14px;align-items:flex-start;">
+                <div style="width:32px;height:32px;border-radius:10px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent);font-size:14px;flex-shrink:0;">1</div>
+                <div>
+                  <div style="font-weight:700;color:var(--text);margin-bottom:2px;">Get your API key</div>
+                  <div style="font-size:13px;">Generate a key from the API Keys page. Each key is bound to your KERI AID via a delegated inception event.</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:14px;align-items:flex-start;">
+                <div style="width:32px;height:32px;border-radius:10px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent);font-size:14px;flex-shrink:0;">2</div>
+                <div>
+                  <div style="font-weight:700;color:var(--text);margin-bottom:2px;">Create a payment</div>
+                  <div style="font-size:13px;">POST to <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--surface2);padding:2px 6px;border-radius:4px;">/v1/payments</code> with the amount, currency, and optional metadata. You'll receive a checkout URL and receiving address.</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:14px;align-items:flex-start;">
+                <div style="width:32px;height:32px;border-radius:10px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent);font-size:14px;flex-shrink:0;">3</div>
+                <div>
+                  <div style="font-weight:700;color:var(--text);margin-bottom:2px;">Redirect or embed</div>
+                  <div style="font-size:13px;">Send customers to the checkout URL, embed the payment button on your site, or build a custom flow using the address + QR code.</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:14px;align-items:flex-start;">
+                <div style="width:32px;height:32px;border-radius:10px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent);font-size:14px;flex-shrink:0;">4</div>
+                <div>
+                  <div style="font-weight:700;color:var(--text);margin-bottom:2px;">Listen for webhooks</div>
+                  <div style="font-size:13px;">Configure a webhook endpoint to receive <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--surface2);padding:2px 6px;border-radius:4px;">payment.confirmed</code> events. Each event includes a KERI interaction event for cryptographic auditability.</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:14px;align-items:flex-start;">
+                <div style="width:32px;height:32px;border-radius:10px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent);font-size:14px;flex-shrink:0;">5</div>
+                <div>
+                  <div style="font-weight:700;color:var(--text);margin-bottom:2px;">Get paid</div>
+                  <div style="font-size:13px;">ADA arrives directly in your wallet. No custody. No counterparty risk. Full KERI audit trail on every transaction.</div>
+                </div>
+              </div>
+            </div>
+
+            <h3 style="font-size:16px;font-weight:800;letter-spacing:-0.03em;color:var(--text);margin-bottom:12px;">Supported Tokens</h3>
+            <p style="margin-bottom:16px;">Native ADA, plus any Cardano native token. Fiat conversion available for USD, AUD, EUR, GBP at settlement via real-time oracle pricing.</p>
+
+            <h3 style="font-size:16px;font-weight:800;letter-spacing:-0.03em;color:var(--text);margin-bottom:12px;">KERI Identity Layer</h3>
+            <p>Every payment event is anchored as a KERI interaction event (<code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--surface2);padding:2px 6px;border-radius:4px;">ixn</code>) in your Key Event Log. This provides cryptographic proof of every payment created, received, and confirmed — without relying on any third-party attestation.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ SETTINGS VIEW ═══════ -->
+    <div class="content-area view" id="view-settings">
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title">Merchant Settings</div>
+        </div>
+        <div class="section-body">
+          <div class="settings-row">
+            <div class="settings-info">
+              <div class="settings-name">Auto-convert to AUD</div>
+              <div class="settings-desc">Automatically convert received ADA to Australian Dollars at settlement</div>
+            </div>
+            <div class="toggle" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-info">
+              <div class="settings-name">Email Notifications</div>
+              <div class="settings-desc">Receive email for each confirmed payment</div>
+            </div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-info">
+              <div class="settings-name">KERI Event Witnessing</div>
+              <div class="settings-desc">Broadcast payment events to 3 KERI witness nodes (2-of-3 threshold)</div>
+            </div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-info">
+              <div class="settings-name">Native Token Support</div>
+              <div class="settings-desc">Accept Cardano native tokens in addition to ADA</div>
+            </div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-info">
+              <div class="settings-name">Staking on Receipt</div>
+              <div class="settings-desc">Automatically delegate received ADA to your preferred stake pool</div>
+            </div>
+            <div class="toggle" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-info">
+              <div class="settings-name">Test Mode</div>
+              <div class="settings-desc">Use Cardano Preview testnet for development</div>
+            </div>
+            <div class="toggle" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card" style="margin-top:24px;">
+        <div class="section-header">
+          <div class="section-title">Payout Wallet</div>
+        </div>
+        <div style="padding:22px;">
+          <div class="form-group">
+            <label class="form-label">Cardano Receiving Address</label>
+            <input class="form-input" type="text" value="addr1qx2kd28nq8ac5prwg32hhvudlwggpgfp8utlyqxu2a3genj2f6yt7m8h8r9ahx2rl5p06lxpgek8hxqrs3jxk5q9gvz6q4u79c5" style="font-family:'JetBrains Mono',monospace;font-size:11px;">
+            <div class="form-hint">Payments are sent directly to this address. Verified via KERI AID binding.</div>
+          </div>
+          <div style="margin-top:12px;">
+            <button class="btn btn-primary" onclick="showToast('✅','Wallet address updated')">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══ TOAST CONTAINER ═══ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ═══ PAYMENT CREATED MODAL ═══ -->
+<div class="modal-overlay" id="paymentModal">
+  <div class="modal-content">
+    <div class="modal-accent-bar"></div>
+    <div class="modal-header">
+      <div class="modal-title">Payment Created</div>
+      <button class="modal-close" onclick="closeModal('paymentModal')">×</button>
+    </div>
+    <div class="modal-body" style="text-align:center;">
+      <div class="auth-ring" id="authRing">
+        <div class="auth-icon">🔐</div>
+      </div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:4px;" id="modalStatus">Signing with passkey…</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:20px;" id="modalSubStatus">KERI interaction event pending</div>
+
+      <div id="modalPaymentDetails" style="display:none;">
+        <div style="background:var(--bg);border-radius:14px;padding:16px;margin-bottom:16px;border:1px solid var(--border);">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted2);margin-bottom:6px;">Payment Link</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);word-break:break-all;" id="modalPaymentUrl">https://pay.selfdriven.money/c/pay_7f3kR9xLm2</div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:center;">
+          <button class="btn btn-primary btn-sm" onclick="showToast('📋','Link copied');closeModal('paymentModal')">Copy Link</button>
+          <button class="btn btn-outline btn-sm" onclick="showToast('📧','Email sent');closeModal('paymentModal')">Email to Customer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PASSKEY SIGNING MODAL ═══ -->
+<div class="modal-overlay" id="passKeyModal">
+  <div class="modal-content" style="width:380px;">
+    <div class="modal-accent-bar"></div>
+    <div class="modal-body" style="text-align:center;padding:32px;">
+      <div class="auth-ring" id="payAuthRing">
+        <div class="auth-icon">🛡️</div>
+      </div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:4px;" id="payAuthStatus">Verifying identity…</div>
+      <div style="font-size:12px;color:var(--muted);" id="payAuthSub">WebAuthn passkey challenge</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// APP STATE
+// ═══════════════════════════════════════════════════
+const ADA_USD_RATE = 0.70;
+
+const MOCK_TXS = [
+  { id: 'pay_7f3kR9xLm2', desc: 'Invoice #1042 — Web Dev', amount: 250, status: 'confirmed', date: '2026-03-11 14:23', hash: '8f2a7b3c...c4d1', sn: 1710168180 },
+  { id: 'pay_9d2mK4pNr8', desc: 'Premium Subscription', amount: 45, status: 'confirmed', date: '2026-03-11 11:05', hash: 'a1c4e8f2...7b2e', sn: 1710156300 },
+  { id: 'pay_2hLw8xQvT6', desc: 'Consulting Hour — March', amount: 120, status: 'pending', date: '2026-03-11 09:42', hash: 'pending...', sn: null },
+  { id: 'pay_5nRt1yBzK3', desc: 'Design Assets Pack', amount: 85, status: 'confirmed', date: '2026-03-10 16:17', hash: 'f3d9a2b1...e8c7', sn: 1710093420 },
+  { id: 'pay_8jFm3cWaP1', desc: 'API Integration Support', amount: 300, status: 'confirmed', date: '2026-03-10 10:30', hash: 'b7e1c5d8...4a9f', sn: 1710072600 },
+  { id: 'pay_4kGs7hXeQ9', desc: 'Hosting — Q1 2026', amount: 180, status: 'confirmed', date: '2026-03-09 15:44', hash: 'c2a8f6e3...1d5b', sn: 1709996640 },
+  { id: 'pay_1mHt6nYfR0', desc: 'NFT Minting Service', amount: 50, status: 'expired', date: '2026-03-09 08:12', hash: 'expired', sn: null },
+  { id: 'pay_6pJv2dZgS4', desc: 'Smart Contract Audit', amount: 500, status: 'confirmed', date: '2026-03-08 13:55', hash: 'd5b3e9a7...8f2c', sn: 1709905500 },
+  { id: 'pay_3qKw9eCbU7', desc: 'Monthly Retainer', amount: 400, status: 'confirmed', date: '2026-03-07 09:00', hash: 'e8c1d4f6...2a7b', sn: 1709801200 },
+  { id: 'pay_0rLx5fDcV2', desc: 'Workshop Registration', amount: 35, status: 'confirmed', date: '2026-03-06 17:30', hash: 'a4f7b2c9...5e3d', sn: 1709745000 },
+  { id: 'pay_7sNy4gEeW8', desc: 'Logo Design', amount: 150, status: 'confirmed', date: '2026-03-05 14:20', hash: 'c9d3e5a1...7f4b', sn: 1709647200 },
+  { id: 'pay_1tPz8hFfX5', desc: 'KERI Integration Setup', amount: 275, status: 'confirmed', date: '2026-03-04 11:10', hash: 'b2e6a8f4...3c9d', sn: 1709550600 },
+];
+
+// ═══════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════
+function switchView(viewId) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  const view = document.getElementById('view-' + viewId);
+  if (view) view.classList.add('active');
+
+  const navItem = document.querySelector(`.nav-item[data-view="${viewId}"]`);
+  if (navItem) navItem.classList.add('active');
+
+  const titles = {
+    'dashboard': 'Dashboard',
+    'create': 'Create Payment',
+    'transactions': 'Transactions',
+    'checkout-demo': 'Checkout Preview',
+    'api-keys': 'API Keys',
+    'webhooks': 'Webhooks',
+    'docs': 'Integration Docs',
+    'settings': 'Settings',
+  };
+  document.getElementById('pageTitle').textContent = titles[viewId] || 'Dashboard';
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ═══════════════════════════════════════════════════
+// TOAST NOTIFICATIONS
+// ═══════════════════════════════════════════════════
+function showToast(icon, message) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<span class="toast-icon">${icon}</span>${message}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.classList.add('leaving'); setTimeout(() => toast.remove(), 300); }, 3000);
+}
+
+// ═══════════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ═══════════════════════════════════════════════════
+// QR CODE GENERATOR (lightweight)
+// ═══════════════════════════════════════════════════
+function drawQR(canvasId, data) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const size = canvas.width;
+  const modules = 25;
+  const cellSize = size / modules;
+
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = '#1a1410';
+
+  // Deterministic pattern from data string
+  let seed = 0;
+  for (let i = 0; i < data.length; i++) seed = ((seed << 5) - seed + data.charCodeAt(i)) | 0;
+  function prng() { seed = (seed * 16807) % 2147483647; return (seed & 0x7fffffff) / 0x7fffffff; }
+
+  // Finder patterns
+  function drawFinder(ox, oy) {
+    for (let r = 0; r < 7; r++) for (let c = 0; c < 7; c++) {
+      if (r === 0 || r === 6 || c === 0 || c === 6 || (r >= 2 && r <= 4 && c >= 2 && c <= 4))
+        ctx.fillRect((ox + c) * cellSize, (oy + r) * cellSize, cellSize, cellSize);
+    }
+  }
+  drawFinder(0, 0); drawFinder(modules - 7, 0); drawFinder(0, modules - 7);
+
+  // Data area
+  for (let r = 0; r < modules; r++) for (let c = 0; c < modules; c++) {
+    if ((r < 8 && c < 8) || (r < 8 && c >= modules - 8) || (r >= modules - 8 && c < 8)) continue;
+    if (prng() > 0.55) ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
+  }
+
+  // selfdriven accent center
+  const center = size / 2;
+  const markSize = cellSize * 3;
+  ctx.fillStyle = '#c8442f';
+  ctx.beginPath();
+  ctx.roundRect(center - markSize/2, center - markSize/2, markSize, markSize, 3);
+  ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `bold ${cellSize * 1.6}px Poppins`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('₳', center, center + 1);
+}
+
+// ═══════════════════════════════════════════════════
+// CHART
+// ═══════════════════════════════════════════════════
+function drawChart() {
+  const svg = document.getElementById('volumeChart');
+  if (!svg) return;
+
+  const data = [320, 480, 350, 620, 540, 780, 650, 890, 720, 950, 840, 1100, 960, 1250, 1150, 1380, 1200, 1520, 1350, 1680, 1450, 1750, 1600, 1820, 1700, 1950, 1850, 2100, 1980, 2250];
+  const w = 700, h = 160, pad = 5;
+  const maxVal = Math.max(...data);
+  const stepX = (w - pad * 2) / (data.length - 1);
+
+  let pathD = '';
+  let fillD = `M ${pad} ${h - pad}`;
+  data.forEach((val, i) => {
+    const x = pad + i * stepX;
+    const y = h - pad - (val / maxVal) * (h - pad * 2);
+    if (i === 0) { pathD += `M ${x} ${y}`; } else { pathD += ` L ${x} ${y}`; }
+    fillD += ` L ${x} ${y}`;
+  });
+  fillD += ` L ${pad + (data.length - 1) * stepX} ${h - pad} Z`;
+
+  // Grid lines
+  let gridHTML = '';
+  for (let i = 0; i < 4; i++) {
+    const y = pad + i * (h - pad * 2) / 3;
+    gridHTML += `<line class="chart-grid-line" x1="${pad}" y1="${y}" x2="${w - pad}" y2="${y}"/>`;
+    const label = Math.round(maxVal - (maxVal / 3) * i);
+    gridHTML += `<text class="chart-label" x="${w - pad + 4}" y="${y + 3}">${label}</text>`;
+  }
+
+  // Day labels
+  const days = ['Mar 1', 'Mar 8', 'Mar 15', 'Mar 22', 'Mar 29'];
+  days.forEach((d, i) => {
+    const x = pad + i * (w - pad * 2) / (days.length - 1);
+    gridHTML += `<text class="chart-label" x="${x}" y="${h + 2}">${d}</text>`;
+  });
+
+  svg.innerHTML = `
+    ${gridHTML}
+    <defs>
+      <linearGradient id="fillGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.2"/>
+        <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path class="chart-fill" d="${fillD}" fill="url(#fillGrad)"/>
+    <path class="chart-line" d="${pathD}"/>
+  `;
+}
+
+// ═══════════════════════════════════════════════════
+// TRANSACTION TABLE
+// ═══════════════════════════════════════════════════
+function renderTxRow(tx) {
+  return `
+    <tr>
+      <td>
+        <div style="font-weight:600;font-size:13px;">${tx.id}</div>
+        <div style="font-size:11px;color:var(--muted);">${tx.desc}</div>
+      </td>
+      <td>
+        <div style="font-weight:700;">${tx.amount} <span style="color:var(--muted);font-weight:500;">ADA</span></div>
+        <div style="font-size:11px;color:var(--muted);">≈ $${(tx.amount * ADA_USD_RATE).toFixed(2)}</div>
+      </td>
+      <td><span class="status-badge ${tx.status}">${tx.status === 'confirmed' ? '● Confirmed' : tx.status === 'pending' ? '◌ Pending' : '○ Expired'}</span></td>
+      <td style="font-size:12px;color:var(--muted);">${tx.date}</td>
+      <td>${tx.sn ? `<span class="tx-hash" onclick="showToast('📋','KERI event copied')">ixn:${tx.sn}</span>` : '<span style="font-size:11px;color:var(--muted2)">—</span>'}</td>
+    </tr>
+  `;
+}
+
+function renderTxRowFull(tx) {
+  return `
+    <tr>
+      <td><span class="tx-hash" onclick="showToast('📋','ID copied')">${tx.id}</span></td>
+      <td style="font-size:13px;">${tx.desc}</td>
+      <td style="font-weight:700;">${tx.amount} ADA</td>
+      <td style="font-size:12px;color:var(--muted);">$${(tx.amount * ADA_USD_RATE).toFixed(2)}</td>
+      <td><span class="status-badge ${tx.status}">${tx.status === 'confirmed' ? '● Confirmed' : tx.status === 'pending' ? '◌ Pending' : '○ Expired'}</span></td>
+      <td style="font-size:12px;color:var(--muted);">${tx.date}</td>
+      <td>${tx.hash !== 'expired' && tx.hash !== 'pending...' ? `<span class="tx-hash" onclick="showToast('📋','Hash copied')">${tx.hash}</span>` : '<span style="color:var(--muted2);font-size:11px;">—</span>'}</td>
+    </tr>
+  `;
+}
+
+function populateTables() {
+  document.getElementById('recentTxBody').innerHTML = MOCK_TXS.slice(0, 5).map(renderTxRow).join('');
+  document.getElementById('allTxBody').innerHTML = MOCK_TXS.map(renderTxRowFull).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// CREATE PAYMENT
+// ═══════════════════════════════════════════════════
+function updatePreview() {
+  const amount = parseFloat(document.getElementById('payAmount').value) || 0;
+  const currency = document.getElementById('payCurrency').value;
+  const desc = document.getElementById('payDesc').value || 'Payment description';
+
+  let adaAmount = amount;
+  if (currency !== 'ADA') adaAmount = amount / ADA_USD_RATE;
+
+  document.getElementById('previewAmount').innerHTML = `${adaAmount.toFixed(adaAmount < 1 ? 4 : 1)} <span style="font-size:20px;color:var(--muted)">ADA</span>`;
+  document.getElementById('previewFiat').textContent = currency === 'ADA'
+    ? `≈ $${(amount * ADA_USD_RATE).toFixed(2)} USD`
+    : `${amount.toFixed(2)} ${currency}`;
+  document.getElementById('previewDesc').textContent = desc;
+
+  drawQR('qrCanvas', `web+cardano:addr1qx2kd28nq8ac5prwg32hhvudlw?amount=${adaAmount}&desc=${encodeURIComponent(desc)}`);
+}
+
+function createPayment() {
+  const amount = parseFloat(document.getElementById('payAmount').value);
+  if (!amount || amount <= 0) { showToast('⚠️', 'Enter a valid amount'); return; }
+
+  openModal('paymentModal');
+  document.getElementById('modalPaymentDetails').style.display = 'none';
+  document.getElementById('authRing').classList.remove('verified');
+  document.getElementById('modalStatus').textContent = 'Signing with passkey…';
+  document.getElementById('modalSubStatus').textContent = 'KERI interaction event pending';
+
+  setTimeout(() => {
+    document.getElementById('authRing').classList.add('verified');
+    document.getElementById('authRing').querySelector('.auth-icon').textContent = '✅';
+    document.getElementById('modalStatus').textContent = 'Payment created successfully';
+    document.getElementById('modalSubStatus').textContent = 'KERI ixn event confirmed — witnessed by 3 nodes';
+    document.getElementById('modalPaymentDetails').style.display = 'block';
+
+    const pid = 'pay_' + Math.random().toString(36).substr(2, 10);
+    document.getElementById('modalPaymentUrl').textContent = `https://pay.selfdriven.money/c/${pid}`;
+
+    showToast('✅', `Payment ${pid} created`);
+  }, 2200);
+}
+
+function copyPaymentLink() {
+  showToast('📋', 'Payment link copied to clipboard');
+}
+
+// ═══════════════════════════════════════════════════
+// CHECKOUT INTERACTIONS
+// ═══════════════════════════════════════════════════
+function selectWallet(el) {
+  document.querySelectorAll('.wallet-option').forEach(w => w.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function simulatePayment() {
+  openModal('passKeyModal');
+  document.getElementById('payAuthRing').classList.remove('verified');
+  document.getElementById('payAuthStatus').textContent = 'Verifying identity…';
+  document.getElementById('payAuthSub').textContent = 'WebAuthn passkey challenge';
+
+  setTimeout(() => {
+    document.getElementById('payAuthStatus').textContent = 'Identity verified';
+    document.getElementById('payAuthSub').textContent = 'Signing transaction…';
+  }, 1200);
+
+  setTimeout(() => {
+    document.getElementById('payAuthRing').classList.add('verified');
+    document.getElementById('payAuthRing').querySelector('.auth-icon').textContent = '✅';
+    document.getElementById('payAuthStatus').textContent = 'Payment sent!';
+    document.getElementById('payAuthSub').textContent = 'KERI event confirmed · tx submitted to Cardano';
+    showToast('✅', 'Payment confirmed on-chain');
+  }, 2800);
+
+  setTimeout(() => closeModal('passKeyModal'), 4500);
+}
+
+// TIMER
+let timerSeconds = 29 * 60 + 42;
+function updateTimer() {
+  const min = Math.floor(timerSeconds / 60);
+  const sec = timerSeconds % 60;
+  const display = document.getElementById('timerDisplay');
+  if (display) display.textContent = `${min}:${sec.toString().padStart(2, '0')} remaining`;
+  if (timerSeconds > 0) timerSeconds--;
+}
+setInterval(updateTimer, 1000);
+
+// ═══════════════════════════════════════════════════
+// API KEYS
+// ═══════════════════════════════════════════════════
+function generateApiKey() {
+  const key = 'sd_live_' + Array.from({length:24}, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random()*62)]).join('');
+  showToast('🔑', 'New API key generated');
+
+  const body = document.getElementById('apiKeysBody');
+  const row = document.createElement('div');
+  row.className = 'api-key-row';
+  row.innerHTML = `
+    <div class="api-key-meta">
+      <div class="api-key-name">New Key</div>
+      <div class="api-key-date">Created just now</div>
+    </div>
+    <div class="api-key-value">${key.substring(0, 28)}••••••••</div>
+    <button class="copy-btn" onclick="showToast('📋','Key copied to clipboard')">📋</button>
+  `;
+  body.appendChild(row);
+}
+
+// ═══════════════════════════════════════════════════
+// WEBHOOKS
+// ═══════════════════════════════════════════════════
+function addWebhook() {
+  const url = prompt('Enter webhook URL:');
+  if (!url) return;
+  const body = document.getElementById('webhooksBody');
+  const row = document.createElement('div');
+  row.className = 'settings-row';
+  row.innerHTML = `
+    <div class="settings-info">
+      <div class="settings-name" style="font-family:'JetBrains Mono',monospace;font-size:13px;">${url}</div>
+      <div class="settings-desc">Events: payment.confirmed, payment.expired</div>
+    </div>
+    <div class="status-badge confirmed">Active</div>
+  `;
+  body.appendChild(row);
+  showToast('✅', 'Webhook endpoint added');
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  populateTables();
+  drawChart();
+  updatePreview();
+  drawQR('checkoutQr', 'web+cardano:addr1qx2kd28nq8ac5prwg32hhvudlwggpgfp8?amount=250');
+});
+</script>
+</body>
+</html>
